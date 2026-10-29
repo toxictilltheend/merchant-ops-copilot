@@ -18,6 +18,7 @@
  const nameId=new Map(rows.map((r,i)=>[r.querySelector('.mn b').textContent,String(730510001+i)]));
  window.xlSid=function(name){if(nameId.has(name))return nameId.get(name);let h=17;for(const c of name)h=(h*131+c.charCodeAt(0))%800000000;return String(740000000+h);};
  mfInit();
+ for(const row of rows){const tag=row.querySelector('.sidtag');if(tag)tag.textContent='ID '+row.dataset.sid;}
  function merchantFromRow(row,i){const td=row.children;return {id:'m'+(i+1),sid:row.dataset.sid,name:row.dataset.nm,gaps:(row.dataset.td||'').split(',').filter(Boolean),st:row.dataset.hp,tag:row.dataset.hp,product:row.dataset.product,gmv:td[3].textContent.trim(),yoy:td[4].textContent.trim(),material:xlPct(td[5]),coupon:xlPct(td[7]),redbag:xlPct(td[9]),preN:xlPct(td[11])};}
  const allMerchants=()=>rows.map(merchantFromRow);
  SC.merchants=allMerchants;
