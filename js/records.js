@@ -4,7 +4,7 @@ window.SC=(function(){
  const KEY='shangce.workbench.v2',VERSION=2;
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const copy=v=>JSON.parse(JSON.stringify(v));
- const state={tasks:[],drafts:[],events:[],activeDraft:null};let timer,saveTimer,focusBefore;
+ const state={tasks:[],drafts:[],events:[],activeDraft:null};let timer,saveTimer,focusBefore,resetting=false;
  const id=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
  function toast(msg){const el=document.getElementById('sc-toast');el.textContent=msg;el.classList.add('visible');clearTimeout(timer);timer=setTimeout(()=>el.classList.remove('visible'),4200);}
  function modal(title,html){focusBefore=document.activeElement;document.getElementById('sc-modal-title').textContent=title;document.getElementById('sc-modal-body').innerHTML=html;document.getElementById('sc-modal').hidden=false;document.querySelector('#sc-modal header button').focus();}
@@ -13,12 +13,14 @@ window.SC=(function(){
  function canSee(item){const a=item.actor;return ROLE===0||(a&&a.industry===(ROLE===1?LEADER_IND:ME.ind)&&(ROLE===1?(LEADER_TRACK==='all'||a.track===LEADER_TRACK):a.nick===ME.nick));}
  const globals=['TODOS','BT_TPL','XA_MY','XA_MY_UID','MET_SHOW','BT_TASK','BT_SEL','BT_SCRIPT','BT_OPEN','XL_SCOPE','BT_MERCHANTS','XL_PICK','XL_HANDPICK','XA'];
  function save(){
+  if(resetting)return;
   try{const g={};for(const k of globals)if(typeof window[k]!=='undefined')g[k]=window[k];const entries={};for(const k of ['bk','fb','pp'])entries[k]={items:SEC[k].items,ord:SEC[k].ord,seq:SEC[k].seq};
    const snapshot={version:VERSION,savedAt:new Date().toISOString(),state,globals:g,entries,role:document.getElementById('idRole').value,industry:LEADER_IND,track:LEADER_TRACK,dates:[MT_D1,MT_D2],chat:xlChat().innerHTML,selected:Array.from(document.querySelectorAll('.mrow.sel'),e=>e.dataset.sid)};
    localStorage.setItem(KEY,JSON.stringify(snapshot));document.querySelectorAll('.sc-save-state').forEach(e=>e.textContent='已保存在此浏览器');
   }catch(e){toast('本地保存失败：浏览器存储空间不足或已禁用。请导出任务后再清理。');}
  }
- function saveSoon(){clearTimeout(saveTimer);saveTimer=setTimeout(save,180);}
+ function beginReset(){resetting=true;clearTimeout(saveTimer);}
+ function saveSoon(){if(resetting)return;clearTimeout(saveTimer);saveTimer=setTimeout(save,180);}
  function log(message){state.events.unshift({at:new Date().toISOString(),message});state.events=state.events.slice(0,120);}
  function rebuildLogs(){RC_LOG=RC_LOG.filter(r=>!r.scId);for(const t of state.tasks){const a=t.actor;const poolKey=a.industry+'|'+a.nick;if(!RC_MER[poolKey])RC_MER[poolKey]=[];
    for(const m of t.merchants){if(!RC_MER[poolKey].some(x=>x.mer===m.name&&x.act===t.label))RC_MER[poolKey].push({mer:m.name,act:t.label,rt:'M',at:'未行动'});
@@ -74,5 +76,5 @@ window.SC=(function(){
  document.getElementById('sc-modal').addEventListener('click',e=>{if(e.target.id==='sc-modal')closeModal();});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('sc-modal').hidden)closeModal();});
  document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});window.addEventListener('pagehide',save);
- return {KEY,state,escape:esc,copy,toast,modal,closeModal,save,saveSoon,restore,actor,canSee,log,download,readSheet,importList,pickedExport,saveDraft,restoreDraft,submit,execute,receipt,openTask,preview,openLibrary,exportTasks,reset,confirmReset,rebuildLogs,scheduleValid};
+ return {KEY,state,escape:esc,copy,toast,modal,closeModal,save,saveSoon,beginReset,restore,actor,canSee,log,download,readSheet,importList,pickedExport,saveDraft,restoreDraft,submit,execute,receipt,openTask,preview,openLibrary,exportTasks,reset,confirmReset,rebuildLogs,scheduleValid};
 })();

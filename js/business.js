@@ -3,7 +3,8 @@
  'use strict';
  const copy=x=>JSON.parse(JSON.stringify(x));
  const DAY=86400000,clock=()=>new Date().toISOString();
- function parts(stamp=clock()){const d=new Date(stamp);if(!Number.isFinite(+d))return null;return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(d).reduce((a,p)=>(a[p.type]=p.value,a),{});}
+ const businessDateFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
+ function parts(stamp=clock()){const d=new Date(stamp);if(!Number.isFinite(+d))return null;return businessDateFormatter.formatToParts(d).reduce((a,p)=>(a[p.type]=p.value,a),{});}
  function day(stamp=clock()){const p=parts(stamp);return p?`${p.year}-${p.month}-${p.day}`:'';}
  function time(stamp=clock()){const p=parts(stamp);return p?`${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}`:'无效时间';}
  function shift(ds,n){return day(new Date(Date.parse(ds+'T12:00:00+08:00')+n*DAY).toISOString());}
@@ -13,7 +14,7 @@
  const products=['棉质衬衫','针织开衫','轻软通勤鞋','系带休闲鞋','帆布托特包','亲肤家居服','编织围巾','轻量光学镜架'];
  const shoeNames=['橙屿原创鞋履','山岚制鞋工作室','栖木鞋履工坊','拾步日常鞋店','晴川鞋履研究所','鹿橙手作鞋铺','半夏舒适鞋履','归途轻履'];
  // A versioned demonstration fixture must not rewrite yesterday's history when reopened tomorrow.
- const seedDay='2026-10-30',datasetVersion='SYN-2026-10-30-v5';
+ const seedDay='2026-10-30',datasetVersion='SYN-2026-10-30-v6';
  const round=v=>Math.round((v+Number.EPSILON)*10)/10;
  const ratio=(n,d)=>Number.isFinite(n)&&Number.isFinite(d)&&d>0?round(n/d*100):null;
  const ageOf=ds=>Math.round((Date.parse(seedDay+'T12:00:00+08:00')-Date.parse(ds+'T12:00:00+08:00'))/DAY);
@@ -31,11 +32,11 @@
  const staffRoster=industries.flatMap((ind,ix)=>staffNames.map((nick,j)=>({ind,nick,no:String(j<2?960001+ix*2+j:960100+ix*10+j),track:j%2?'产业带':'原创设计'})));
  const contactChannels=['协作消息','短信','在线会话','电话','站内信'];
  const contactActivities=[
-  {id:'SYN-HISTORY-CAM-1',name:'秋季大促招商',talks:['大促报名截止提醒','大促玩法解读 · 满减档位','大促资源位申报提醒']},
-  {id:'SYN-HISTORY-CAM-2',name:'消费券专项',talks:['消费券未设置提醒','消费券面额优化建议','消费券核销率偏低预警']},
+  {id:'SYN-HISTORY-CAM-1',name:'25年双11大促招商',talks:['大促报名截止提醒','大促玩法解读 · 满减档位','大促资源位申报提醒']},
+  {id:'SYN-HISTORY-CAM-2',name:'8月消费券专项',talks:['消费券未设置提醒','消费券面额优化建议','消费券核销率偏低预警']},
   {id:'SYN-HISTORY-CAM-3',name:'店铺红包冲刺',talks:['店铺红包未设置提醒','红包档位配置建议']},
   {id:'SYN-HISTORY-CAM-4',name:'前N报名冲刺',talks:['前N 未报名催办','前N 货品结构建议']},
-  {id:'SYN-HISTORY-CAM-5',name:'秋季上新周',talks:['新势力周招商邀约','新品上新节奏提醒']}
+  {id:'SYN-HISTORY-CAM-5',name:'9月新势力周',talks:['新势力周招商邀约','新品上新节奏提醒']}
  ];
  const merchants=industries.flatMap((industry,ix)=>Array.from({length:72},(_,i)=>{
   const n=shopRoots[i%8],slot=i%8,extra=i>=8,series=['晨光','远山','浅湾','南巷','原野','晴空','渡口','风庭'][Math.floor((i-8)/8)],ownerIndex=i<6?0:i<8?1:i<14?0:i<24?1:Math.floor(i/12),person=staffRoster[ix*6+ownerIndex];
@@ -47,7 +48,22 @@
   if(!m.signup)m.gaps.push('signup');if(!m.hot)m.gaps.push('hot');if(!m.newProducts)m.gaps.push('newprod');if(!m.live)m.gaps.push('live');if(m.yoyValue<0)m.gaps.push('recall');
   m.st=m.tag=missing?'资料待核对':m.gaps.length>=5?'风险':m.gaps.length?'预警':'安全';m.scale=m.gmvValue>=300?'头部':m.gmvValue>=100?'腰部':'长尾';m.tier='T'+(slot<2?8:slot<4?6:4);m.gmv=m.gmvValue.toFixed(1)+'万';m.yoy=(m.yoyValue>=0?'+':'')+m.yoyValue+'%';return Object.freeze(m);
  }));
- const byId=sid=>merchants.find(m=>m.sid===String(sid));
+
+ // Preserve existing merchant identities. Reference assignments reuse their owners' merchants;
+ // only 84 extra merchants are needed where the reference pool is larger than the existing one.
+ const referenceStaffCounts=[6,6,4,3,4,5,4,3],referenceBrandCounts=[12,12,12,10,10,10,9,9],referenceStaff=[],referenceAssignments=[];
+ const referenceRandom=s=>{const x=Math.sin(s*12.9898)*43758.5453;return x-Math.floor(x);};
+ for(const [ix,ind] of industries.entries()){
+  const count=referenceStaffCounts[ix],people=staffRoster.filter(p=>p.ind===ind),ordered=[...people.filter(p=>p.track==='原创设计').slice(0,Math.ceil(count/2)),...people.filter(p=>p.track==='产业带').slice(0,Math.floor(count/2))];
+  const pools=ordered.map(()=>[]),available=ordered.map(person=>merchants.filter(m=>m.industry===ind&&m.owner===person.nick));referenceStaff.push(...ordered.map((person,j)=>({...person,referenceIndex:j})));
+  for(let i=0;i<referenceBrandCounts[ix]*6;i++){
+   const personIndex=i%count,person=ordered[personIndex],pool=pools[personIndex],j=pool.length,candidates=available[personIndex];let m=candidates[j];
+   if(!m){const source=candidates[j%candidates.length],extra=merchants.length-576,sid=String(735000001+ix*100+i),n=copy(source);Object.assign(n,{id:'m'+sid,sid,name:shopRoots[i%8]+['云溪','青原','晴屿','山川','澄湾','远庭'][Math.floor(i/8)%6]+ind+'精选店·'+String(i+1).padStart(2,'0'),product:'橙选·'+products[ix]+'精选款',productId:'P'+sid,seedIndex:576+extra,source:'SYN-REFERENCE-POOL-01'});applyFacts(n);m=Object.freeze(n);merchants.push(m);}
+   const q=(j*7+3+personIndex*3)%20,u=(j*11+5+personIndex*7)%20,rt=q<9?'R':q<15?'S':'M',at=rt==='R'?(u<11?'已行动':u<16?'部分完成':'未行动'):rt==='S'?(u<4?'已行动':u<9?'部分完成':'未行动'):(u<1?'已行动':'未行动'),activity=contactActivities[(i*3+1)%contactActivities.length];
+   const item={sid:m.sid,mer:m.name,ind,nick:person.nick,act:activity.name,campaignId:activity.id,rt,at,referenceKey:ind+'|'+personIndex+'|'+j};pool.push(item);referenceAssignments.push(item);
+  }
+ }
+ const merchantIndex=new Map(merchants.map(m=>[m.sid,m]));const byId=sid=>merchantIndex.get(String(sid));
  function allowed(m,a){return !!m&&(a.role===0||(m.industry===a.industry&&(a.role===2?m.owner===a.nick:a.track==='all'||m.track===a.track)));}
  const scope=a=>merchants.filter(m=>allowed(m,a));
  const metricInfo=[
@@ -113,9 +129,9 @@
  function gaps(m,version='v1'){const v=campaign.versions[version]||campaign.versions.v1;return [...new Set([...m.gaps.filter(k=>!['material','coupon','redbag','preN'].includes(k)),...['material','coupon','redbag','preN'].filter(k=>m[k]!==null&&(m[k]<v.threshold||(k==='coupon'&&!m.couponJoined)||(k==='redbag'&&!m.redbagSet)||(k==='preN'&&!m.preNJoined)))])];}
  function candidates(a,key,version){return scope(a).filter(m=>key==='missing'?m.quality!=='完整':gaps(m,version).includes(key));}
  function legacySeedLogs(){return merchants.filter(m=>m.seedIndex<64).sort((a,b)=>a.seedIndex-b.seedIndex).filter((m,i)=>i%3===0).map((m,i)=>({d:shift(seedDay,-3),t:shift(seedDay,-3)+' 10:30',act:campaign.name,campaignId:campaign.id,ind:m.industry,nick:m.owner,mer:m.name,sid:m.sid,chn:'企业消息',talk:contactActivities[0].talks[i%3],st:i%5===0?'发送失败':'发送成功',re:i%5===0?'—':i%4===0?'已回复':'未读',ac:i%5===0?'—':i%4===0?'已行动':'未行动',source:'SYN-RECEIPTS-01'}));}
- function seedLogs(){return [...legacySeedLogs(),...contactActivities.flatMap((activity,a)=>merchants.map((m,i)=>{const code=(i+a*3)%10,st=i%16===0||code===0?'待发送':i%16===1||code===1?'发送失败':'发送成功',re=st!=='发送成功'?'—':i%10<5&&code<7?'已回复':(i+2*a)%3===0?'未读':'已读未回',ac=st!=='发送成功'?'—':re==='已回复'&&i%10<3?'已行动':re==='已回复'?'部分完成':'未行动',d=shift(seedDay,-(a*5+i%3)),t=d+' '+String(9+(i+a)%10).padStart(2,'0')+':'+String((i*7+a*11)%60).padStart(2,'0');return {d,t,act:activity.name+'（演示）',campaignId:activity.id,ind:m.industry,nick:m.owner,mer:m.name,sid:m.sid,chn:contactChannels[(i+a)%contactChannels.length],talk:activity.talks[(i+a)%activity.talks.length],st,re,ac,source:'SYN-RECEIPTS-03'};}))];}
+ function seedLogs(){const out=[];let seed=0;for(let back=29;back>=0;back--){const ds=shift(seedDay,-back);for(let si=0;si<referenceStaff.length;si++){const person=referenceStaff[si],pool=referenceAssignments.filter(r=>r.ind===person.ind&&r.nick===person.nick),lim=Math.max(1,Math.round(pool.length*(0.55+0.30*referenceRandom(si*91+7)))),k=6+Math.floor(referenceRandom(++seed)*9);for(let j=0;j<k;j++){seed++;const item=pool[Math.floor(referenceRandom(seed*7+2)*lim)%lim],activity=contactActivities.find(a=>a.id===item.campaignId),p=referenceRandom(seed*13+5),st=p<0.85?'发送成功':p<0.93?'发送失败':'待发送';let re='—',ac='—';if(st==='发送成功'){const w=referenceRandom(seed*17+7);re=item.rt==='R'?(w<0.75?'已回复':'已读未回'):item.rt==='S'?(w<0.80?'已读未回':'未读'):(w<0.85?'未读':'已读未回');ac=re==='未读'?'未行动':item.at;}const hh=9+Math.floor(referenceRandom(seed*23+13)*11),mm=Math.floor(referenceRandom(seed*29+17)*60);out.push({d:ds,t:ds+' '+String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0'),act:item.act,campaignId:item.campaignId,ind:item.ind,nick:item.nick,mer:item.mer,sid:item.sid,chn:contactChannels[Math.floor(referenceRandom(seed*31+19)*contactChannels.length)%contactChannels.length],talk:activity.talks[Math.floor(referenceRandom(seed*37+23)*activity.talks.length)%activity.talks.length],st,re,ac,source:'SYN-REFERENCE-RECEIPTS-01',referenceKey:item.referenceKey});}}}return out;}
 
- const seedReceipts=seedLogs();
+ const seedReceipts=seedLogs(),frequencyReceipts=legacySeedLogs();
  function reason(m,{actor,tasks=[],taskSel=null,campaignId=campaign.id,version='v1',history=[],now=clock(),ignoreTaskId=null,checkGaps=true}){
   if(!allowed(m,actor))return '不在当前角色、行业或赛道范围';if(!m.eligible)return '不符合活动参与条件';
   if(taskSel)tasks=tasks.filter(k=>!taskSel[k]||taskSel[k].includes(m.id));
@@ -131,7 +147,17 @@
  function assess(list,options){const unique=new Map();list.forEach(m=>unique.set(String(m.sid),m));const approved=[],blocked=[];for(const m of unique.values()){const why=reason(byId(m.sid),options);if(why)blocked.push({sid:m.sid,name:m.name,reason:why});else approved.push(copy(byId(m.sid)));}return {approved,blocked};}
  const transitions={submitted:['sent','failed','cancelled','paused'],sent:['delivered','failed'],delivered:['read','replied','acted'],read:['replied','acted'],replied:['acted'],failed:['submitted'],scheduled:['submitted','cancelled','paused'],paused:['cancelled'],acted:[],cancelled:[]};
  function transition(m,next,at=clock(),failure=''){if(!transitions[m.status]?.includes(next))throw Error('不允许从 '+m.status+' 变更为 '+next);if(next==='failed'&&!failure.trim())throw Error('失败需要填写原因');if(next==='submitted'&&m.status==='failed'&&(m.attempts||1)>=3)throw Error('最多模拟3次尝试');if(next==='submitted'&&m.status==='failed')m.attempts=(m.attempts||1)+1;m.status=next;m.events=m.events||[];m.events.push({at,status:next,reason:failure});if(failure)m.failure=failure;if(next==='submitted')m.failure='';return m;}
- function history(tasks){return [...seedReceipts.map(r=>({sid:r.sid,campaignId:r.campaignId,at:r.d+'T10:30:00+08:00',status:r.ac==='已行动'?'acted':r.st==='发送失败'?'failed':'sent',taskId:'seed-'+r.sid})),...tasks.filter(t=>!t.legacy).flatMap(t=>t.merchants.map(m=>({sid:m.sid,campaignId:t.campaignId,at:m.attemptAt||m.sentAt||t.executedAt||t.createdAt,status:m.status||t.status,taskId:t.id})))];}
+ function history(tasks){return [...[...frequencyReceipts,...seedReceipts].map(r=>({sid:r.sid,campaignId:r.campaignId,at:r.t.replace(' ','T')+':00+08:00',status:r.ac==='已行动'?'acted':r.st==='发送失败'?'failed':r.st==='待发送'?'submitted':'sent',taskId:'seed-'+r.sid})),...tasks.filter(t=>!t.legacy).flatMap(t=>t.merchants.map(m=>({sid:m.sid,campaignId:t.campaignId,at:m.attemptAt||m.sentAt||t.executedAt||t.createdAt,status:m.status||t.status,taskId:t.id})))];}
  function fingerprint(config,version){return JSON.stringify({list:config.list.map(m=>String(m.sid)).sort(),tasks:[...(config.tasks||[])].sort(),taskSel:Object.entries(config.taskSel||{}).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>[k,[...v].sort()]),text:config.text,channels:Object.keys(config.chn||{}).filter(k=>config.chn[k]).sort(),when:config.when,date:config.when==='plan'?config.date:'',time:config.when==='plan'?config.time:'',content:config.content,version});}
- return {DAY,clock,copy,day,time,shift,scheduled,industries,staffRoster,contactActivities,contactChannels,seedDay,datasetVersion,historyStart,merchants,byId,allowed,scope,metrics,targets,metricInfo,evidence,activityTotal,metricValues,metricSummary,snapshotAt,scopeAt,metricsAt,metricSeries,campaign,gaps,candidates,seedReceipts,reason,assess,transition,history,fingerprint};
+
+ // Historical fixtures are immutable. Reuse date/scope calculations and return fresh copies
+ // so callers cannot mutate cached results. Each cache is bounded for long sessions.
+ const scopeCacheKey=list=>[...new Set(list.map(m=>typeof m==='string'?m:m.sid))].sort().join(','),memo=(cache,key,compute)=>{if(cache.has(key))return copy(cache.get(key));const value=compute();if(cache.size>=2500)cache.delete(cache.keys().next().value);cache.set(key,copy(value));return value;};
+ const metricsAtBase=metricsAt,metricsAtCache=new Map();metricsAt=function(list,ds){return memo(metricsAtCache,scopeCacheKey(list)+'|'+ds,()=>metricsAtBase(list,ds));};
+ const activityTotalBase=activityTotal,activityCache=new Map();activityTotal=function(list,index,from,to){return memo(activityCache,scopeCacheKey(list)+'|'+index+'|'+from+'|'+to,()=>activityTotalBase(list,index,from,to));};
+ const metricValuesBase=metricValues,valuesCache=new Map();metricValues=function(list,from,to){return memo(valuesCache,scopeCacheKey(list)+'|'+from+'|'+to,()=>metricValuesBase(list,from,to));};
+ const targetsBase=targets,targetsCache=new Map();targets=function(list,from=historyStart,to=seedDay){return memo(targetsCache,scopeCacheKey(list)+'|'+from+'|'+to,()=>targetsBase(list,from,to));};
+ const metricSeriesBase=metricSeries,seriesCache=new Map();metricSeries=function(list,index,from,to){return memo(seriesCache,scopeCacheKey(list)+'|'+index+'|'+from+'|'+to,()=>metricSeriesBase(list,index,from,to));};
+ const metricSummaryBase=metricSummary,summaryCache=new Map();metricSummary=function(list,index,from,to){return memo(summaryCache,scopeCacheKey(list)+'|'+index+'|'+from+'|'+to,()=>metricSummaryBase(list,index,from,to));};
+ return {DAY,clock,copy,day,time,shift,scheduled,industries,staffRoster,contactActivities,contactChannels,referenceStaff,referenceAssignments,seedDay,datasetVersion,historyStart,merchants,byId,allowed,scope,metrics,targets,metricInfo,evidence,activityTotal,metricValues,metricSummary,snapshotAt,scopeAt,metricsAt,metricSeries,campaign,gaps,candidates,seedReceipts,reason,assess,transition,history,fingerprint};
 });
