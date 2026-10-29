@@ -1,2 +1,594 @@
-<!doctype html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="招商运营 Copilot：从政策解读、经营诊断到人工审核与执行反馈的可操作产品作品。合成数据演示。"><meta name="theme-color" content="#2455df"><title>Merchant Ops · 招商运营 Copilot</title><link rel="stylesheet" href="./web/styles.css"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='13' fill='%232455df'/%3E%3Cpath d='M12 32V16l12 10 12-10v16' fill='none' stroke='white' stroke-width='4'/%3E%3C/svg%3E"></head><body><div id="app"></div><div id="toast" role="status" aria-live="polite"></div><script type="module" src="./web/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#EA6A2A"><meta name="description" content="商策运营工作台：经营指标、商家诊断与触达编排的可操作合成业务演示。"><link rel="icon" href="data:,">
+<title>商策 · 商家运营工作台</title>
+<link rel="stylesheet" href="styles/base.css"><link rel="stylesheet" href="styles/theme.css">
+</head>
+<body>
+
+
+<header class="topnav" data-component="top-nav">
+  <div class="brand">
+    <span class="logo"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3 L20 7.5 L20 16.5 L12 21 L4 16.5 L4 7.5 Z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 3 L12 12 M12 12 L4 7.5 M12 12 L20 7.5" stroke="#fff" stroke-width="1.4"/></svg></span>
+    <span class="bt">商策<span class="brand-sub">运营工作台</span></span>
+    <span class="dept">演示空间 <span class="caret">&#9662;</span></span>
+  </div>
+  <nav class="nav">
+    <a>首页</a>
+    <a>商家运营</a>
+    <a>数据</a>
+    <a>营销</a>
+    <a>数据工具</a>
+    <a>商品运营</a>
+    <a>全部 <span class="caret">v</span></a>
+  </nav>
+  <div class="rt">
+    <div class="toggle"><span>智能模式</span><span class="on">经典模式</span></div>
+    <span class="fav">常用</span>
+    <span class="ai" title="AI 助手">AI</span>
+    <span class="more" title="更多">···</span>
+    <span class="ava" aria-label="用户头像"></span>
+  </div>
+</header>
+
+
+<div class="subtab" data-component="sub-tab">
+  <div class="subtab-in">
+    <div class="crumb">商家运营 <span>/</span> <b id="crumbNow">认领明细</b></div>
+    <div class="st-pills">
+      <span class="st-pill" onclick="stPick(this,'A')"><span class="st-ic"><svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1.5 L15.2 5.1 L15.2 12.9 L9 16.5 L2.8 12.9 L2.8 5.1 Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9 1.5 L9 9 M9 9 L2.8 5.1 M9 9 L15.2 5.1" stroke="currentColor" stroke-width="1.2" opacity=".72"/></svg></span>运营工作台</span>
+      <span class="st-pill on" onclick="stPick(this,'B')"><span class="st-ic"><svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1.5 L15.2 5.1 L15.2 12.9 L9 16.5 L2.8 12.9 L2.8 5.1 Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9 1.5 L9 9 M9 9 L2.8 5.1 M9 9 L15.2 5.1" stroke="currentColor" stroke-width="1.2" opacity=".72"/></svg></span>认领明细</span>
+      <span class="st-pill" onclick="stPick(this,'C')"><span class="st-ic"><svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1.5 L15.2 5.1 L15.2 12.9 L9 16.5 L2.8 12.9 L2.8 5.1 Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9 1.5 L9 9 M9 9 L2.8 5.1 M9 9 L15.2 5.1" stroke="currentColor" stroke-width="1.2" opacity=".72"/></svg></span>触达中心</span>
+    </div>
+  </div>
+</div>
+
+<main class="wrap"><div class="demo-strip"><span><i></i>商策工作空间 <b>合成业务演示</b></span><span>规则驱动助手 · 本地保存<button onclick="SC.openLibrary()">草稿与任务</button><button onclick="SC.reset()">重置演示</button></span></div>
+  <div class="sec" style="margin-top:0">
+
+    
+    <div class="idbar">
+      <label class="idf first">
+        <span class="idf-l">运营角色</span>
+        <select id="idRole" aria-label="运营角色" onchange="setRoleUI(this.value)">
+          <option value="0">超级管理员</option>
+          <option value="1a">行业 负责人</option>
+          <option value="1i">行业 负责人（原创设计 赛道）</option>
+          <option value="1c">行业 负责人（产业带 赛道）</option>
+          <option value="2" selected>运营专员</option>
+        </select>
+      </label>
+      
+      <label class="idf" id="idIndWrap" style="display:none">
+        <span class="idf-l">负责行业</span>
+        <select id="idInd" aria-label="负责行业" onchange="setInd(this.value)"></select>
+      </label>
+      
+      <span id="ib0" style="display:none"></span>
+      <span id="ib1" style="display:none"></span>
+      <span id="ib2" class="on" style="display:none"></span>
+      <span id="ibScope" style="display:none">仅本人认领的 150 家商家</span>
+    </div>
+
+    
+    <div class="stage-mod">
+      <div class="app">
+        <div class="app-main">
+        
+        <span id="appTtl" style="display:none">我的商家 · 大促与基础供给</span>
+        <span id="appWho" style="display:none">负责 150 家 · 亿级/千万级</span>
+        <div class="app-body">
+          
+          <div class="tabpane" id="l1paneA">
+
+          
+          <div class="wt-sec">
+            <div class="wt-h"><span class="wt-t">常用后台汇总</span><span class="wt-sub" id="bkSub"></span><span class="wt-more" onclick="bkOpen('bk')">管理常用 </span></div>
+            <div class="appgrid" id="bkGrid"></div>
+          </div>
+
+          
+          <div class="wt-sec">
+            <div class="wt-h"><span class="wt-t">常用 经营报表</span><span class="wt-sub" id="fbSub"></span><span class="wt-more" onclick="bkOpen('fb')">管理常用 </span></div>
+            <div class="rptgrid" id="fbGrid"></div>
+          </div>
+
+          
+          <div class="wt-sec">
+            <div class="wt-h"><span class="wt-t">入口横向找人</span><span class="wt-sub" id="ppSub"></span><span class="wt-more" onclick="bkOpen('pp')">通讯录 </span></div>
+            <div class="pplgrid" id="ppGrid"></div>
+          </div>
+
+          </div>
+
+          
+          <div class="tabpane on" id="l1paneB">
+          
+          <div class="mtbar">
+            <span class="mtb-l">统计周期</span>
+            <input type="date" class="mtb-d" id="mtD1" aria-label="统计开始日期" onchange="mtApply()">
+            <span class="mtb-t">至</span>
+            <input type="date" class="mtb-d" id="mtD2" aria-label="统计结束日期" onchange="mtApply()">
+            <span class="mtb-q" onclick="mtQuick(6)">近 7 天</span>
+            <span class="mtb-q" onclick="mtQuick(29)">近 30 天</span>
+            <span class="pickbtn" onclick="document.getElementById('kpiPicker').classList.toggle('open')">选择指标</span>
+          </div>
+          
+          <div class="picker" id="kpiPicker">
+            <div class="pk-h"><span id="kpiPickHd">选择展示指标（勾选后首屏卡片同步更新）</span>
+              <span class="lk2" onclick="metShowAll(1)">全选</span><span class="lk2" onclick="metShowAll(0)">清空</span></div>
+            <div id="kpiPickBody"></div>
+          </div>
+          
+          <div class="kpis c7" id="kpiCards"></div>
+          
+          <div class="rolehint" id="roleHint"></div>
+
+          
+          <div class="rtable collapsed" id="tblInd">
+            <div class="rt-h" onclick="toggleRtable('tblInd')">
+              <span class="rt-t">各子行业进度</span>
+              <span class="rt-sub">8 个子行业 · 指标口径与上方指标栏完全一致</span>
+              <span class="rt-tip">目标值来自<b>目标设置 · 分行业目标下发</b> · 表格可横向滚动</span>
+              <span class="rt-exp">›</span>
+            </div>
+            <div class="rt-body">
+              <div class="rt-fil">
+                <span class="fil-l">行业名称</span>
+                <input type="text" id="indFilName" class="fil-inp" aria-label="筛选行业名称" placeholder="输入行业名称" oninput="filInd()">
+              </div>
+              <div class="rt-scroll"><table class="rt" id="rtInd"></table></div>
+            </div>
+          </div>
+
+          
+          <div class="rtable collapsed" id="tblStaff">
+            <div class="rt-h" onclick="toggleRtable('tblStaff')">
+              <span class="rt-t">专员明细进度</span>
+              <span class="rt-sub" id="stSub"></span>
+              <span class="rt-tip">目标值来自<b>目标设置 · 专员目标</b> · 表格可横向滚动</span>
+              <span class="rt-exp">›</span>
+            </div>
+            <div class="rt-body">
+              <div class="rt-fil">
+                <span class="fil-l">行业名称</span>
+                <input type="text" id="stFilInd" class="fil-inp sm" aria-label="按行业名称筛选" placeholder="行业名称" oninput="filStaff()">
+                <span class="fil-l">专员花名</span>
+                <input type="text" id="stFilNick" class="fil-inp sm" aria-label="按专员花名筛选" placeholder="花名" oninput="filStaff()">
+                <span class="fil-l">专员工号</span>
+                <input type="text" id="stFilNo" class="fil-inp sm" aria-label="按专员工号筛选" placeholder="工号" oninput="filStaff()">
+              </div>
+              <div class="rt-scroll"><table class="rt" id="rtStaff"></table></div>
+              <div class="mpager" id="stPager"></div>
+            </div>
+          </div>
+          
+          <div class="panels2">
+            <div class="tpanel">
+              <div class="pnl-h">今日待办<span class="cnt" id="tdCnt"></span><span class="addbtn" onclick="openTask()">＋ 添加任务</span></div>
+              <div class="tlist" id="tdList"></div>
+            </div>
+          </div>
+
+          
+          <div class="filters">
+            <span class="fld inp"><input id="mfSid" aria-label="按商家ID搜索" placeholder="商家ID" oninput="mfGo()"></span>
+            <span class="fld inp grow"><input id="mfName" aria-label="按店铺名称搜索" placeholder="店铺名称" oninput="mfGo()"></span>
+            <span class="fld sel" id="mfHpWrap">健康度<select id="mfHp" aria-label="按健康度筛选" onchange="mfGo()">
+              <option value="">全部</option><option value="安全">安全</option><option value="预警">预警</option><option value="风险">风险</option></select></span>
+            <span class="fld sel" id="mfScaleWrap">规模分层<select id="mfScale" aria-label="按规模分层筛选" onchange="mfGo()">
+              <option value="">全部</option><option value="头部">头部</option><option value="腰部">腰部</option><option value="长尾">长尾</option></select></span>
+            <span class="fld sel" id="mfTierWrap">T 层级<select id="mfTier" aria-label="按T层级筛选" onchange="mfGo()">
+              <option value="">全部</option><option value="T8">T8</option><option value="T7">T7</option><option value="T6">T6</option></select></span>
+            <span class="fld pick" id="mfTdBtn" onclick="document.getElementById('todoPicker').classList.toggle('open')">待办类型：全部 <span class="pk-caret">&#9662;</span></span>
+            <span class="fld pick" id="mfRkBtn" onclick="document.getElementById('riskPicker').classList.toggle('open')">异常原因：全部 <span class="pk-caret">&#9662;</span></span>
+            <span class="fld pick" id="mfLnkBtn" onclick="document.getElementById('lnkPicker').classList.toggle('open')">是否建联：全部 <span class="pk-caret">&#9662;</span></span>
+            <span class="fld pick" id="mfClmBtn" onclick="document.getElementById('clmPicker').classList.toggle('open')">是否认领：全部 <span class="pk-caret">&#9662;</span></span>
+            <span class="fld pick" onclick="document.getElementById('colPicker').classList.toggle('open')">选择指标（透出/跟进）</span>
+          </div>
+          
+          <div class="picker" id="todoPicker">
+            <div class="pk-h">按待办类型筛选商家 · 可多选，命中任一即入选
+              <span class="lk2" onclick="mfTdAll(1)">全选</span><span class="lk2" onclick="mfTdAll(0)">清空</span></div>
+            <div class="pk-opts" id="todoOpts"></div>
+          </div>
+          
+          <div class="picker" id="riskPicker">
+            <div class="pk-h">按命中的异常原因筛选商家 · 风险规则在策略中心配置 · 可多选
+              <span class="lk2" onclick="mfRkAll(1)">全选</span><span class="lk2" onclick="mfRkAll(0)">清空</span></div>
+            <div class="pk-opts" id="riskOpts"></div>
+          </div>
+          
+          <div class="picker" id="lnkPicker">
+            <div class="pk-h">按是否建联筛选商家 · 可多选
+              <span class="lk2" onclick="mfLnkAll(1)">全选</span><span class="lk2" onclick="mfLnkAll(0)">清空</span></div>
+            <div class="pk-opts" id="lnkOpts"></div>
+          </div>
+          
+          <div class="picker" id="clmPicker">
+            <div class="pk-h">按认领状态筛选商家 · 可多选
+              <span class="lk2" onclick="mfClmAll(1)">全选</span><span class="lk2" onclick="mfClmAll(0)">清空</span></div>
+            <div class="pk-opts" id="clmOpts"></div>
+          </div>
+          
+          <div class="picker" id="colPicker">
+            <div class="pk-h">选择明细透出/跟进的指标列</div>
+            <div class="pk-opts">
+              <span class="opt on">成交30d</span><span class="opt on">YoY</span><span class="opt on">消费券报名</span><span class="opt on">消费券渗透</span><span class="opt on">店铺红包</span><span class="opt on">红包渗透</span><span class="opt on">前N报名</span><span class="opt on">前N渗透</span><span class="opt">上新30d</span><span class="opt">橱窗SAB</span><span class="opt">聚单渗透</span>
+            </div>
+          </div>
+          
+          <div class="batchbar">
+            <span class="sel-n">已选 <b id="selCount">0</b> 家商家</span>
+            <span class="hint">勾选左侧复选框选择商家，支持跨页多选</span>
+            <span class="sp"></span>
+            <span class="btn-ghost" onclick="clearSel()">清空</span>
+            <span class="btn-primary" onclick="xlBatch()">批量触达</span>
+          </div>
+          
+          <div class="tblwrap">
+            <table class="mtbl xwide">
+              <thead>
+                <tr>
+                  <th class="ck-h"><span class="allck" onclick="toggleAll(this)"></span></th>
+                  <th>商家</th><th>健康度<span class="hnote">近30d</span></th><th>成交30d</th><th>YoY</th><th>多素材覆盖率</th><th>消费券报名</th><th>消费券渗透</th><th>店铺红包</th><th>红包渗透</th><th>前N报名</th><th>前N渗透</th><th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id="mr1" class="mrow">
+                  <td class="ck-c"><span class="rowck" onclick="toggleRow(this)"></span></td>
+                  <td><div class="mn"><span class="dt" style="background:#4fd08a"></span><span><b>橙屿原创鞋履</b><i><span class="ttag sm t8">T8</span>C店 · 设计师女鞋</i></span></div></td>
+                  <td><div class="hcell"><span class="hp safe">安全</span><span class="wc" style="color:#1f9e57">0 次</span></div></td>
+                  <td>391.4万</td><td class="up">+18.6% ^</td>
+                  <td><span class="cbar"><span class="bar"><i style="width:95%;background:#4fd08a"></i></span>95%</span></td>
+                  <td class="down">已报名</td><td><span class="cbar"><span class="bar"><i style="width:94%;background:#4fd08a"></i></span>94%</span></td>
+                  <td class="down">已设置</td><td><span class="cbar"><span class="bar"><i style="width:88%;background:#4fd08a"></i></span>88%</span></td>
+                  <td class="down">已报名</td><td><span class="cbar"><span class="bar"><i style="width:80%;background:#39c98a"></i></span>80%</span></td>
+                  <td><span class="diag" onclick="openDiag(this)" data-m="橙屿原创鞋履" data-tag="C店 · 女鞋 · T8">诊断</span></td>
+                </tr>
+                <tr id="mr2" class="mrow">
+                  <td class="ck-c"><span class="rowck" onclick="toggleRow(this)"></span></td>
+                  <td><div class="mn"><span class="dt" style="background:#4fd08a"></span><span><b>山岚制鞋工作室</b><i><span class="ttag sm t8">T8</span>C店 · 设计师女鞋</i></span></div></td>
+                  <td><div class="hcell"><span class="hp safe">安全</span><span class="wc" style="color:#1f9e57">0 次</span></div></td>
+                  <td>301.6万</td><td class="up">+9.2% ^</td>
+                  <td><span class="cbar"><span class="bar"><i style="width:92%;background:#4fd08a"></i></span>92%</span></td>
+                  <td class="down">已报名</td><td><span class="cbar"><span class="bar"><i style="width:92%;background:#4fd08a"></i></span>92%</span></td>
+                  <td class="down">已设置</td><td><span class="cbar"><span class="bar"><i style="width:82%;background:#39c98a"></i></span>82%</span></td>
+                  <td class="down">已报名</td><td><span class="cbar"><span class="bar"><i style="width:76%;background:#eda06c"></i></span>76%</span></td>
+                  <td><span class="diag" onclick="openDiag(this)" data-m="山岚制鞋工作室" data-tag="C店 · 女鞋 · T8">诊断</span></td>
+                </tr>
+                <tr id="mr3" class="mrow">
+                  <td class="ck-c"><span class="rowck" onclick="toggleRow(this)"></span></td>
+                  <td><div class="mn"><span class="dt" style="background:#eda06c"></span><span><b>栖木鞋履工坊</b><i><span class="ttag sm t8">T8</span>C店 · 设计师女鞋</i></span></div></td>
+                  <td><div class="hcell"><span class="hp warn">预警</span><span class="wc"><b>预警3次</b></span></div></td>
+                  <td>259.1万</td><td class="down">-4.1% v</td>
+                  <td><span class="cbar"><span class="bar"><i style="width:70%;background:#eda06c"></i></span>70%</span></td>
+                  <td class="down">已报名</td><td><span class="cbar"><span class="bar"><i style="width:78%;background:#eda06c"></i></span>78%</span></td>
+                  <td class="warnc">待设置</td><td><span class="cbar"><span class="bar"><i style="width:45%;background:#e88645"></i></span>45%</span></td>
+                  <td class="down">已报名</td><td><span class="cbar"><span class="bar"><i style="width:52%;background:#e88645"></i></span>52%</span></td>
+                  <td><span class="diag" onclick="openDiag(this)" data-m="栖木鞋履工坊" data-tag="C店 · 女鞋 · T8">诊断</span></td>
+                </tr>
+                <tr id="mr4" class="mrow">
+                  <td class="ck-c"><span class="rowck" onclick="toggleRow(this)"></span></td>
+                  <td><div class="mn"><span class="dt" style="background:#4fd08a"></span><span><b>拾步日常鞋店</b><i><span class="ttag sm t7">T7</span>C店 · 设计师女鞋</i></span></div></td>
+                  <td><div class="hcell"><span class="hp safe">安全</span><span class="wc" style="color:#1f9e57">0 次</span></div></td>
+                  <td>216.1万</td><td class="up">+12.3% ^</td>
+                  <td><span class="cbar"><span class="bar"><i style="width:88%;background:#4fd08a"></i></span>88%</span></td>
+                  <td class="down">已报名</td><td><span class="cbar"><span class="bar"><i style="width:85%;background:#4fd08a"></i></span>85%</span></td>
+                  <td class="down">已设置</td><td><span class="cbar"><span class="bar"><i style="width:70%;background:#eda06c"></i></span>70%</span></td>
+                  <td class="down">已报名</td><td><span class="cbar"><span class="bar"><i style="width:64%;background:#eda06c"></i></span>64%</span></td>
+                  <td><span class="diag" onclick="openDiag(this)" data-m="拾步日常鞋店" data-tag="C店 · 女鞋 · T7">诊断</span></td>
+                </tr>
+                <tr id="mr5" class="mrow">
+                  <td class="ck-c"><span class="rowck" onclick="toggleRow(this)"></span></td>
+                  <td><div class="mn"><span class="dt" style="background:#ff7a73"></span><span><b>晴川鞋履研究所</b><i><span class="ttag sm t7">T7</span>C店 · 设计师女鞋</i></span></div></td>
+                  <td><div class="hcell"><span class="hp risk">风险</span><span class="wc"><b>风险4次</b></span></div></td>
+                  <td>176.3万</td><td class="down">-15.8% v</td>
+                  <td><span class="cbar"><span class="bar"><i style="width:35%;background:#ff6b61"></i></span>35%</span></td>
+                  <td class="up">未设置</td><td><span class="cbar"><span class="bar"><i style="width:20%;background:#ff6b61"></i></span>20%</span></td>
+                  <td class="up">未设置</td><td><span class="cbar"><span class="bar"><i style="width:12%;background:#ff6b61"></i></span>12%</span></td>
+                  <td class="up">未报名</td><td><span class="cbar"><span class="bar"><i style="width:15%;background:#ff6b61"></i></span>15%</span></td>
+                  <td><span class="diag" onclick="openDiag(this)" data-m="晴川鞋履研究所" data-tag="C店 · 女鞋 · T7">诊断</span></td>
+                </tr>
+                <tr id="mr6" class="mrow">
+                  <td class="ck-c"><span class="rowck" onclick="toggleRow(this)"></span></td>
+                  <td><div class="mn"><span class="dt" style="background:#4fd08a"></span><span><b>鹿橙手作鞋铺</b><i><span class="ttag sm t7">T7</span>C店 · 设计师女鞋</i></span></div></td>
+                  <td><div class="hcell"><span class="hp safe">安全</span><span class="wc" style="color:#1f9e57">0 次</span></div></td>
+                  <td>140.3万</td><td class="up">+6.7% ^</td>
+                  <td><span class="cbar"><span class="bar"><i style="width:84%;background:#4fd08a"></i></span>84%</span></td>
+                  <td class="down">已报名</td><td><span class="cbar"><span class="bar"><i style="width:80%;background:#39c98a"></i></span>80%</span></td>
+                  <td class="down">已设置</td><td><span class="cbar"><span class="bar"><i style="width:68%;background:#eda06c"></i></span>68%</span></td>
+                  <td class="down">已报名</td><td><span class="cbar"><span class="bar"><i style="width:60%;background:#eda06c"></i></span>60%</span></td>
+                  <td><span class="diag" onclick="openDiag(this)" data-m="鹿橙手作鞋铺" data-tag="C店 · 女鞋 · T7">诊断</span></td>
+                </tr>
+                <tr id="mr7" class="mrow">
+                  <td class="ck-c"><span class="rowck" onclick="toggleRow(this)"></span></td>
+                  <td><div class="mn"><span class="dt" style="background:#eda06c"></span><span><b>半夏舒适鞋履</b><i><span class="ttag sm t6">T6</span>C店 · 设计师女鞋</i></span></div></td>
+                  <td><div class="hcell"><span class="hp warn">预警</span><span class="wc"><b>预警2次</b></span></div></td>
+                  <td>105.7万</td><td class="down">-2.3% v</td>
+                  <td><span class="cbar"><span class="bar"><i style="width:62%;background:#eda06c"></i></span>62%</span></td>
+                  <td class="down">已报名</td><td><span class="cbar"><span class="bar"><i style="width:72%;background:#eda06c"></i></span>72%</span></td>
+                  <td class="warnc">待设置</td><td><span class="cbar"><span class="bar"><i style="width:48%;background:#e88645"></i></span>48%</span></td>
+                  <td class="down">已报名</td><td><span class="cbar"><span class="bar"><i style="width:50%;background:#e88645"></i></span>50%</span></td>
+                  <td><span class="diag" onclick="openDiag(this)" data-m="半夏舒适鞋履" data-tag="C店 · 女鞋 · T6">诊断</span></td>
+                </tr>
+                <tr id="mr8" class="mrow">
+                  <td class="ck-c"><span class="rowck" onclick="toggleRow(this)"></span></td>
+                  <td><div class="mn"><span class="dt" style="background:#ff7a73"></span><span><b>归途轻履</b><i><span class="ttag sm t6">T6</span>C店 · 设计师女鞋</i></span></div></td>
+                  <td><div class="hcell"><span class="hp risk">风险</span><span class="wc"><b>风险6次</b></span></div></td>
+                  <td>75.3万</td><td class="down">-22.4% v</td>
+                  <td><span class="cbar"><span class="bar"><i style="width:28%;background:#ff6b61"></i></span>28%</span></td>
+                  <td class="up">未设置</td><td><span class="cbar"><span class="bar"><i style="width:18%;background:#ff6b61"></i></span>18%</span></td>
+                  <td class="up">未设置</td><td><span class="cbar"><span class="bar"><i style="width:10%;background:#ff6b61"></i></span>10%</span></td>
+                  <td class="up">未报名</td><td><span class="cbar"><span class="bar"><i style="width:12%;background:#ff6b61"></i></span>12%</span></td>
+                  <td><span class="diag" onclick="openDiag(this)" data-m="归途轻履" data-tag="C店 · 女鞋 · T6">诊断</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="mpager">
+            <span class="mp-info">成交降序 · 共 <b id="mpCnt">8</b> 家<span id="mpFil"></span> · 第 <span id="mpCur">1</span>/<span id="mpTotal">2</span> 页</span>
+            <span class="mp-sp"></span>
+            <span class="mp-btn" onclick="mPage(mpCurPage-1)">‹ 上一页</span>
+            <span id="mpNums"></span>
+            <span class="mp-btn" onclick="mPage(mpCurPage+1)">下一页 ›</span>
+          </div>
+
+          
+          <div class="diag-modal" id="l1diag">
+            <div class="dm-h">
+              <b>商家诊断 · <span id="diagName">橙屿原创鞋履</span></b>
+              <span class="who" id="diagTag">C店 · 女鞋 · T8</span>
+              <span class="dm-close" onclick="document.getElementById('l1diag').classList.remove('open')">× 关闭</span>
+            </div>
+            <div class="dm-body">
+              <div>
+                <div class="dm-t">AI 诊断结论 · 缺口定位</div>
+                <div class="struct">
+                  <div class="st"><div class="lab"><span>店铺红包渗透偏低</span><span class="v">68% · 缺口 -22pt</span></div><div class="bar"><i style="width:68%;background:#e88645"></i></div></div>
+                  <div class="st"><div class="lab"><span>前N 报名渗透不足</span><span class="v">42% · 缺口 -38pt</span></div><div class="bar"><i style="width:42%;background:#ff6b61"></i></div></div>
+                  <div class="st"><div class="lab"><span>消费券渗透达标</span><span class="v">91% · 良好</span></div><div class="bar"><i style="width:91%;background:#39c98a"></i></div></div>
+                </div>
+                <div style="margin-top:12px;font-size:11px;color:#e88543;line-height:1.7"><b style="color:#7b3a0f">结论</b>：该商家成交近 30 天小幅下滑（-2.4%），主要缺口在<b style="color:#d0631a">店铺红包与前N报名渗透</b>，建议优先推动红包补齐与前N报名以承接大促流量。</div>
+              </div>
+              <div>
+                <div class="dm-t">给商家的任务清单<span class="badge">推送到商家端</span></div>
+                <div class="task-note">您好，<b style="color:#7b3a0f">橙屿原创鞋履</b>！大促临近，以下 3 项待办完成即可承接大促流量，点「去处理」可直达设置入口 </div>
+                <div class="mtasks">
+                  <div class="mtask p-r">
+                    <span class="ico r"></span>
+                    <div class="mid">
+                      <div class="tt">设置全店店铺红包<span class="pri hi">高优先</span></div>
+                      <div class="gap">现状 <b>渗透 68%</b> › 目标 90%｜预估进店转化 +8%</div>
+                    </div>
+                    <span class="go">去营销中心设置 ›</span>
+                  </div>
+                  <div class="mtask p-m">
+                    <span class="ico m"></span>
+                    <div class="mid">
+                      <div class="tt">报名「前N 补贴」<span class="pri mid2">建议</span></div>
+                      <div class="gap">现状 <b>未报名 · 渗透 42%</b> › 目标 报名并达 70%</div>
+                    </div>
+                    <span class="go">去大促报名页 ›</span>
+                  </div>
+                  <div class="mtask p-g done">
+                    <span class="ico g"></span>
+                    <div class="mid">
+                      <div class="tt">消费券已设置<span class="pri ok">已达标</span></div>
+                      <div class="gap">渗透 91% · 已达标，无需处理</div>
+                    </div>
+                    <span class="go">已完成</span>
+                  </div>
+                </div>
+                <div class="dm-actions" style="margin-top:12px">
+                  <span class="btn-primary">一键推送任务清单</span>
+                  <span class="btn-ghost">附带话术</span>
+                  <span class="btn-ghost">重新生成</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          </div>
+
+          
+          <div class="tabpane" id="l1paneC">
+          
+          <div class="receipt">
+            <div class="rc-h">触达回执日报
+              <span class="rng">
+                <span>统计周期</span>
+                <input type="date" class="rc-dt" id="rcD1" aria-label="回执开始日期" onchange="rcRender()">
+                <span>—</span>
+                <input type="date" class="rc-dt" id="rcD2" aria-label="回执结束日期" onchange="rcRender()">
+                <span class="rc-qk" onclick="rcQuick(0)">今日</span>
+                <span class="rc-qk" onclick="rcQuick(6)">近 7 天</span>
+                <span class="rc-qk" onclick="rcQuick(29)">近 30 天</span>
+                <span id="rcWho"></span>
+              </span>
+            </div>
+            <div class="funnel" id="rcFunnel"></div>
+
+            
+            <div class="rcsec open" id="rcSumSec">
+              <div class="rcsec-h" onclick="rcToggle('rcSumSec')"><span class="ar">›</span>触达汇总<span class="cnt" id="rcSumCnt"></span></div>
+              <div class="rcsec-b">
+                <div class="rcfil" id="rcSumFil"></div>
+                <div class="rt-scroll"><table class="rt" id="rcSumTb"></table></div>
+                <div id="rcSumEmpty"></div>
+              </div>
+            </div>
+
+            
+            <div class="rcsec" id="rcLogSec">
+              <div class="rcsec-h" onclick="rcToggle('rcLogSec')"><span class="ar">›</span>触达记录<span class="cnt" id="rcLogCnt"></span></div>
+              <div class="rcsec-b">
+                <div class="rcfil" id="rcLogFil"></div>
+                <div class="rt-scroll"><table class="rt" id="rcLogTb"></table></div>
+                <div id="rcLogEmpty"></div>
+                <div class="mpager" id="rcLogPg"></div>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+
+          
+          <div class="xl-rail">
+            <div class="xl-rail-h">AI智能运营助理<span class="sp"></span>
+              <span class="xl-ic" title="历史会话"></span>
+              <span class="xl-ic" title="展开" onclick="xlOpen()">⤢</span>
+            </div>
+            <div class="xl-hi">
+              <div class="tx"><div class="t">Hi, 林舟 </div><div class="s" id="xlHiSub">我是小策，您的运营助理</div></div>
+              <div class="xl-av"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2264%22 height=%2264%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2220%22 fill=%22%23EA6A2A%22/%3E%3Ctext x=%2232%22 y=%2243%22 font-size=%2232%22 text-anchor=%22middle%22 fill=%22white%22%3E策%3C/text%3E%3C/svg%3E" alt="小策"></div>
+            </div>
+            <div class="xl-gs xl-algs"><span>异常告警</span><span class="xl-alc" id="alCnt">共 71 条</span></div>
+            <div class="alist" id="alList">
+              <div class="al clk" data-al="大促未报名" onclick="xaFromAlert('signup',this)"><span class="ic risk">•</span>大促未报名<span class="num hot">22</span></div>
+              <div class="al clk" data-al="消费券未设置" onclick="xaFromAlert('coupon',this)"><span class="ic warn">•</span>消费券未设置<span class="num">9</span></div>
+              <div class="al clk" data-al="店铺红包未设置" onclick="xaFromAlert('redbag',this)"><span class="ic warn">•</span>店铺红包未设置<span class="num">14</span></div>
+              <div class="al clk" data-al="前N 未报名" onclick="xaFromAlert('preN',this)"><span class="ic risk">•</span>前N 未报名<span class="num hot">18</span></div>
+              <div class="al clk" data-al="多素材不达标" onclick="xaFromAlert('material',this)"><span class="ic warn">•</span>多素材不达标<span class="num">11</span></div>
+              <div class="al clk" data-al="竞价爆款缺失" onclick="xaFromAlert('hot',this)"><span class="ic info">•</span>竞价爆款缺失<span class="num">7</span></div>
+            </div>
+            <div class="xl-rail-f">
+              <div class="xl-inp">
+                <input id="xlRailIn" aria-label="向小策 AI 助手提问" placeholder="哪些商家还没有报名好物节？" onkeydown="xlKey(event,'xlRailIn')">
+                <div class="rw"><span class="xl-nc" onclick="xlReset()">⊕ 新会话</span><span class="xl-send" onclick="xlSend('xlRailIn')">^</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="xl-full" id="xlFull">
+          <div class="xl-mask" onclick="xlClose()"></div>
+          <div class="xl-box">
+            <div class="xl-box-h"><b>AI智能运营助理</b><span class="sp"></span>
+              <span class="xl-nc" onclick="xlReset()">⊕ 新会话</span>
+              <span class="xl-ic" title="历史会话"></span>
+              <span class="xl-ic" title="收起" onclick="xlClose()">×</span>
+            </div>
+            <div class="xl-chat" id="xlChat"></div>
+            <div class="xl-box-f">
+              <div class="bar">
+                <span class="xl-nc" onclick="xlReset()">⊕ 新会话</span>
+                <input id="xlIn" aria-label="继续向小策 AI 助手提问" placeholder="继续问小策，例如：把没报名前N的商家再催一轮" onkeydown="xlKey(event,'xlIn')">
+                <span class="xl-send" onclick="xlSend('xlIn')">^</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+
+<div class="tk-mask" id="tkMask">
+  <div class="tk-box">
+    <div class="tk-h">＋ 新建待办任务<span class="rl" id="tkRole"></span><span class="x" onclick="tkClose()">×</span></div>
+    <div class="tk-b">
+      <div>
+        <div class="tk-lb">任务名称 <b>*</b></div>
+        <input class="tk-in" id="tkName" aria-label="任务名称" placeholder="例如：补齐店铺红包配置，10 月 28 日前完成">
+      </div>
+      <div>
+        <div class="tk-lb">下发对象 <b>*</b></div>
+        <div class="tk-modes" id="tkModes"></div>
+        <div class="tk-pick" id="tkPick"></div>
+      </div>
+      <div class="tk-note" id="tkNote"></div>
+    </div>
+    <div class="tk-f">
+      <span class="sum" id="tkSum">未选择下发对象</span>
+      <span class="tk-btn" onclick="tkClose()">取消</span>
+      <span class="tk-btn pri" onclick="tkConfirm()">确认下发</span>
+    </div>
+  </div>
+</div>
+
+
+<div class="tk-mask" id="bkMask">
+  <div class="tk-box">
+    <div class="tk-h" id="bkTtl"><span id="bkTtlTx">管理常用后台</span><span class="rl" id="bkRole"></span><span class="x" onclick="bkClose()">×</span></div>
+
+    
+    <div class="tk-b" id="bkListView">
+      <div class="tk-note" id="bkRule"></div>
+      <div>
+        <div class="tk-lb" id="bkLbList">我的主页板块 <b id="bkCnt"></b> · 按住 拖动调整展示优先级</div>
+        <div style="display:flex;flex-direction:column;gap:8px" id="bkRows"></div>
+      </div>
+    </div>
+
+    
+    <div class="tk-b" id="bkFormView" style="display:none">
+      <div id="bkFields" style="display:flex;flex-direction:column;gap:14px"></div>
+      <div>
+        <div class="tk-lb">生效范围 <b>*</b></div>
+        <div class="tk-modes" id="bkScopes"></div>
+        <div class="bk-inds" id="bkIndPick"></div>
+        <div class="bk-why" id="bkWhy"></div>
+      </div>
+    </div>
+
+    <div class="tk-f">
+      <span class="sum" id="bkSum"></span>
+      <span class="tk-btn" id="bkBtn1" onclick="bkBack()">取消</span>
+      <span class="tk-btn pri" id="bkBtn2" onclick="bkSubmit()">保存</span>
+    </div>
+  </div>
+</div>
+
+
+<div class="tk-mask" id="dtMask" style="z-index:120">
+  <div class="tk-box" style="width:400px">
+    <div class="tk-h"><span>打开协作消息</span><span class="x" onclick="dtClose()">×</span></div>
+    <div class="tk-b">
+      <div style="font-size:13px;color:#462109;font-weight:700">是否继续打开协作消息？</div>
+      <div style="font-size:11.5px;color:#e88543;margin-top:-6px" id="dtWho"></div>
+    </div>
+    <div class="tk-f">
+      <span class="sum" id="dtSum"></span>
+      <span class="tk-btn" onclick="dtClose()">取消</span>
+      <span class="tk-btn pri" onclick="dtGo()">继续打开</span>
+    </div>
+  </div>
+</div>
+
+
+<div class="tk-mask" id="xaWarnMask" style="z-index:130">
+  <div class="tk-box" style="width:440px">
+    <div class="tk-h"><span>定时触达确认</span><span class="x" onclick="xaWarnClose()">×</span></div>
+    <div class="tk-b">
+      <div style="font-size:13px;color:#462109;font-weight:700;line-height:1.6">当前您对商家名单进行了更改，触达会针对这批商家进行定时重复！</div>
+      <div style="font-size:11.5px;color:#e88543;line-height:1.7" id="xaWarnDetail"></div>
+    </div>
+    <div class="tk-f">
+      <span class="sum"></span>
+      <span class="tk-btn" style="white-space:nowrap" onclick="xaWarnClose()">返回修改</span>
+      <span class="tk-btn pri" style="white-space:nowrap" onclick="xaWarnGo()">确认定时发送</span>
+    </div>
+  </div>
+</div>
+
+
+<div class="tk-mask" id="rcH5Mask" style="z-index:130">
+  <div class="tk-box" style="width:900px;max-width:94vw">
+    <div class="tk-h"><span>触达H5预览</span><span class="rl">商家视角</span><span class="x" onclick="rcH5Close()">×</span></div>
+    <div class="tk-b" id="rcH5Body"></div>
+    <div class="tk-f">
+      <span class="sum">此页面为商家点击触达消息后打开的 H5，指标与待办按该商家实时数据生成</span>
+      <span class="tk-btn pri" onclick="rcH5Close()">关闭</span>
+    </div>
+  </div>
+</div>
+<script defer src="vendor/xlsx.full.min.js"></script><script defer src="js/reference.js"></script><script defer src="js/records.js"></script><script defer src="js/enhancements.js"></script>
+<div id="sc-modal" class="sc-modal" role="dialog" aria-modal="true" aria-labelledby="sc-modal-title" hidden><div class="sc-modal-box"><header><h2 id="sc-modal-title"></h2><button onclick="SC.closeModal()" aria-label="关闭">×</button></header><div id="sc-modal-body"></div></div></div><div id="sc-toast" role="status"></div></body>
+</html>
