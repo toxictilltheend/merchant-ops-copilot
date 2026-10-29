@@ -26,6 +26,30 @@
  const scope=a=>merchants.filter(m=>allowed(m,a));
  function metrics(list){const n=list.length,sum=k=>list.reduce((s,m)=>s+(m[k]||0),0),rate=k=>{const valid=list.filter(m=>m[k]!==null);return valid.length?Math.round(valid.reduce((s,m)=>s+m[k],0)/valid.length):0;};return [rate('material'),sum('materialCount'),rate('material'),list.filter(m=>m.material>=80).length,rate('redbag'),list.filter(m=>m.redbagSet).length,rate('coupon'),n?Math.round(list.filter(m=>m.signup).length/n*100):0,list.filter(m=>m.signup).length,list.filter(m=>m.preNJoined).length,n?Math.round(list.filter(m=>m.newProducts>0).length/n*100):0,sum('newProducts'),sum('live'),sum('shortVideos')];}
  function targets(list){const n=list.length;return [80,n*80,80,n,80,n,75,100,n,n,80,n*3,n*2,n*2];}
+ // The 30-day demonstration history is derived per merchant, never drawn independently of the data.
+ const historyStart=shift(seedDay,-29),dailySnapshots=new Map();
+ function snapshotAt(ds){
+  if(!scheduled(ds,'00:00')||ds<historyStart||ds>seedDay)throw Error('请选择合成历史范围内的日期：'+historyStart+' 至 '+seedDay);
+  if(dailySnapshots.has(ds))return dailySnapshots.get(ds);
+  const age=Math.round((Date.parse(seedDay+'T12:00:00+08:00')-Date.parse(ds+'T12:00:00+08:00'))/DAY);
+  const rows=merchants.map((base,index)=>{
+   if(!age)return base;
+   const m=copy(base),phase=(index%8)*0.67+Math.floor(index/8)*0.23;
+   const vary=(value,offset=0,max=100)=>value===null?null:Math.max(0,Math.min(max,Math.round(value*(1-age/29*0.19)+(Math.sin(age*0.61+phase+offset)-Math.sin(phase+offset))*4.2)));
+   for(const [i,key] of ['material','coupon','redbag','preN'].entries())m[key]=vary(base[key],i*0.8);
+   m.materialCount=m.material;m.gmvValue=Math.round(base.gmvValue*(0.8+0.2*(29-age)/29)+Math.sin(age*0.4+phase)*3);m.gmv=m.gmvValue.toFixed(1)+'万';
+   m.yoyValue=Math.round((base.yoyValue+(Math.sin(age*0.4+phase)-Math.sin(phase))*3)*10)/10;m.yoy=(m.yoyValue>=0?'+':'')+m.yoyValue+'%';
+   for(const [i,key] of ['signup','couponJoined','redbagSet','preNJoined','hot'].entries())m[key]=base[key]&&age<=5+(index*7+i*3)%25;
+   for(const [i,key] of ['newProducts','live','shortVideos'].entries())m[key]=Math.max(0,Math.round(base[key]*(1-age/29*0.25)+(Math.sin(age*0.5+phase+i)-Math.sin(phase+i))*0.7));
+   m.gaps=[];for(const key of ['material','coupon','redbag','preN'])if(m[key]!==null&&(m[key]<60||(key==='coupon'&&!m.couponJoined)||(key==='redbag'&&!m.redbagSet)||(key==='preN'&&!m.preNJoined)))m.gaps.push(key);
+   if(!m.signup)m.gaps.push('signup');if(!m.hot)m.gaps.push('hot');if(!m.newProducts)m.gaps.push('newprod');if(!m.live)m.gaps.push('live');if(m.yoyValue<0)m.gaps.push('recall');
+   m.st=m.tag=m.quality!=='完整'?'资料待核对':m.gaps.length>=5?'风险':m.gaps.length?'预警':'安全';m.scale=m.gmvValue>=300?'头部':m.gmvValue>=100?'腰部':'长尾';m.source='SYN-HISTORY-01';m.updatedDay=ds;Object.freeze(m.gaps);return Object.freeze(m);
+  });
+  Object.freeze(rows);dailySnapshots.set(ds,rows);return rows;
+ }
+ function scopeAt(actor,ds){return snapshotAt(ds).filter(m=>allowed(m,actor));}
+ function metricsAt(list,ds){const ids=new Set(list.map(m=>typeof m==='string'?m:m.sid));return metrics(snapshotAt(ds).filter(m=>ids.has(m.sid)));}
+ function metricSeries(list,index,from,to){if(from>to)throw Error('开始日期不能晚于结束日期');snapshotAt(from);snapshotAt(to);const rows=[];for(let ds=from;ds<=to;ds=shift(ds,1))rows.push({d:ds,v:metricsAt(list,ds)[index]});return rows;}
  const campaign={id:'DEMO-AUTUMN-01',name:'秋日经营核对（演示）',source:'SYN-POLICY-01 · 本作品自拟规则',cooldownHours:24,maxSevenDays:2,deadline:shift(seedDay,14),versions:{v1:{label:'V1',threshold:60,description:'经营指标低于60%或尚未配置时提醒'},v2:{label:'V2',threshold:70,description:'经营指标低于70%或尚未配置时提醒'}}};
  function gaps(m,version='v1'){const v=campaign.versions[version]||campaign.versions.v1;return [...new Set([...m.gaps.filter(k=>!['material','coupon','redbag','preN'].includes(k)),...['material','coupon','redbag','preN'].filter(k=>m[k]!==null&&(m[k]<v.threshold||(k==='coupon'&&!m.couponJoined)||(k==='redbag'&&!m.redbagSet)||(k==='preN'&&!m.preNJoined)))])];}
  function candidates(a,key,version){return scope(a).filter(m=>key==='missing'?m.quality!=='完整':gaps(m,version).includes(key));}
@@ -48,5 +72,5 @@
  function transition(m,next,at=clock(),failure=''){if(!transitions[m.status]?.includes(next))throw Error('不允许从 '+m.status+' 变更为 '+next);if(next==='failed'&&!failure.trim())throw Error('失败需要填写原因');if(next==='submitted'&&m.status==='failed'&&(m.attempts||1)>=3)throw Error('最多模拟3次尝试');if(next==='submitted'&&m.status==='failed')m.attempts=(m.attempts||1)+1;m.status=next;m.events=m.events||[];m.events.push({at,status:next,reason:failure});if(failure)m.failure=failure;if(next==='submitted')m.failure='';return m;}
  function history(tasks){return [...seedReceipts.map(r=>({sid:r.sid,campaignId:r.campaignId,at:r.d+'T10:30:00+08:00',status:r.ac==='已行动'?'acted':r.st==='发送失败'?'failed':'sent',taskId:'seed-'+r.sid})),...tasks.filter(t=>!t.legacy).flatMap(t=>t.merchants.map(m=>({sid:m.sid,campaignId:t.campaignId,at:m.attemptAt||m.sentAt||t.executedAt||t.createdAt,status:m.status||t.status,taskId:t.id})))];}
  function fingerprint(config,version){return JSON.stringify({list:config.list.map(m=>String(m.sid)).sort(),tasks:[...(config.tasks||[])].sort(),taskSel:Object.entries(config.taskSel||{}).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>[k,[...v].sort()]),text:config.text,channels:Object.keys(config.chn||{}).filter(k=>config.chn[k]).sort(),when:config.when,date:config.when==='plan'?config.date:'',time:config.when==='plan'?config.time:'',content:config.content,version});}
- return {DAY,clock,copy,day,time,shift,scheduled,industries,seedDay,merchants,byId,allowed,scope,metrics,targets,campaign,gaps,candidates,seedReceipts,reason,assess,transition,history,fingerprint};
+ return {DAY,clock,copy,day,time,shift,scheduled,industries,seedDay,historyStart,merchants,byId,allowed,scope,metrics,targets,snapshotAt,scopeAt,metricsAt,metricSeries,campaign,gaps,candidates,seedReceipts,reason,assess,transition,history,fingerprint};
 });
