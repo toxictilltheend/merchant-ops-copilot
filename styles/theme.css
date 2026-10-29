@@ -42,3 +42,8 @@ body{padding-bottom:32px;background:var(--seed-bg);font-size:13px;line-height:1.
 #tdList .ti:focus-visible{outline:2px solid #de7a37;outline-offset:2px}
 #tdList .ti .tx{line-height:1.7;overflow-wrap:anywhere;min-width:0}
 @media(max-width:600px){#tdList .ti{flex-wrap:wrap;column-gap:8px}#tdList .ti .tx{flex:1;min-width:130px}#tdList .sc-todo-source{font-size:10px}}
+
+/* Compact task list; industry stays visible for every demonstration role. */
+#tdList{gap:8px;padding:4px 12px 12px}#tdList .ti{margin:0;min-height:42px;padding:8px 12px}.idbar #idIndWrap{display:inline-flex}.idbar #idInd:disabled{opacity:1;color:var(--ink);cursor:default}@media(max-width:600px){#tdList{padding:4px 8px 10px;gap:7px}#tdList .ti{padding:8px 9px;min-height:42px}}
+
+@media(max-width:600px){#rcLogPg{display:flex;flex-wrap:wrap;gap:6px}#rcLogPg .mp-info{flex:1 0 100%;white-space:normal}#rcLogPg .mp-sp{display:none}#rcLogPg .mp-btn,#rcLogPg .mp-num{flex-shrink:0}}
