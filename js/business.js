@@ -13,7 +13,7 @@
  const products=['棉质衬衫','针织开衫','轻软通勤鞋','系带休闲鞋','帆布托特包','亲肤家居服','编织围巾','轻量光学镜架'];
  const shoeNames=['橙屿原创鞋履','山岚制鞋工作室','栖木鞋履工坊','拾步日常鞋店','晴川鞋履研究所','鹿橙手作鞋铺','半夏舒适鞋履','归途轻履'];
  // A versioned demonstration fixture must not rewrite yesterday's history when reopened tomorrow.
- const seedDay='2026-10-30',datasetVersion='SYN-2026-10-30-v4';
+ const seedDay='2026-10-30',datasetVersion='SYN-2026-10-30-v5';
  const round=v=>Math.round((v+Number.EPSILON)*10)/10;
  const ratio=(n,d)=>Number.isFinite(n)&&Number.isFinite(d)&&d>0?round(n/d*100):null;
  const ageOf=ds=>Math.round((Date.parse(seedDay+'T12:00:00+08:00')-Date.parse(ds+'T12:00:00+08:00'))/DAY);
@@ -26,14 +26,26 @@
   for(const [kind,key] of ['newProducts','live','shortVideos'].entries())m[key+'Day']=eventsAtAge(m.seedActivity[kind],m.seedIndex,kind,ageOf(m.updatedDay));
   return m;
  }
- const merchants=industries.flatMap((industry,ix)=>shopRoots.map((n,i)=>{
-  const missing=i===5,material=[91,86,67,80,38,null,41,29][i],coupon=[88,84,64,79,25,45,38,17][i],redbag=[83,78,48,73,18,65,34,23][i],preN=[75,70,46,61,21,53,32,16][i];
-  const sid=String(ix===2?730510001+i:731000001+ix*100+i),owner=i<6?'林舟':'林禾',track=i<6?'原创设计':'产业带';
-  const m={id:'m'+sid,sid,name:ix===2?shoeNames[i]:n+industry+'生活馆',industry,owner,track,product:'橙选·'+products[ix],productId:'P'+sid,eligible:true,linked:i!==7,claim:'已认领',gmvValue:[391.4,231.6,87.2,179.5,42.8,105.6,55.1,28.9][i]+ix*1.1,yoyValue:[14.2,7.8,-8.3,11.6,-19.4,4.5,-9.2,-12.6][i],material,coupon,redbag,preN,campaign:[72,58,39,52,14,32,18,11][i],signup:i<4,hot:i%3!==0,couponJoined:i<4,redbagSet:i<5,preNJoined:i<4,live:i%3===0?0:2,newProducts:i%3===0?0:3,shortVideos:i%3,productCount:[100,300,200,400,200,100,300,200][i],materialCount:material===null?null:material,seedIndex:ix*8+i,seedActivity:[i%3===0?0:3,i%3===0?0:2,i%3],quality:missing?'资料待核对':'完整',source:'SYN-MERCHANTS-01',updatedDay:seedDay};
+
+ const staffNames=['林舟','林禾','许岑','陈屿','沈宁','顾川'];
+ const staffRoster=industries.flatMap((ind,ix)=>staffNames.map((nick,j)=>({ind,nick,no:String(j<2?960001+ix*2+j:960100+ix*10+j),track:j%2?'产业带':'原创设计'})));
+ const contactChannels=['协作消息','短信','在线会话','电话','站内信'];
+ const contactActivities=[
+  {id:'SYN-HISTORY-CAM-1',name:'秋季大促招商',talks:['大促报名截止提醒','大促玩法解读 · 满减档位','大促资源位申报提醒']},
+  {id:'SYN-HISTORY-CAM-2',name:'消费券专项',talks:['消费券未设置提醒','消费券面额优化建议','消费券核销率偏低预警']},
+  {id:'SYN-HISTORY-CAM-3',name:'店铺红包冲刺',talks:['店铺红包未设置提醒','红包档位配置建议']},
+  {id:'SYN-HISTORY-CAM-4',name:'前N报名冲刺',talks:['前N 未报名催办','前N 货品结构建议']},
+  {id:'SYN-HISTORY-CAM-5',name:'秋季上新周',talks:['新势力周招商邀约','新品上新节奏提醒']}
+ ];
+ const merchants=industries.flatMap((industry,ix)=>Array.from({length:72},(_,i)=>{
+  const n=shopRoots[i%8],slot=i%8,extra=i>=8,series=['晨光','远山','浅湾','南巷','原野','晴空','渡口','风庭'][Math.floor((i-8)/8)],ownerIndex=i<6?0:i<8?1:i<14?0:i<24?1:Math.floor(i/12),person=staffRoster[ix*6+ownerIndex];
+  const missing=i===5||(extra&&i%17===5),adjust=extra?(i%5-2)*3:0,material=missing?null:Math.min(98,Math.max(10,([91,86,67,80,38,58,41,29][slot])+adjust)),coupon=Math.min(98,Math.max(10,[88,84,64,79,25,45,38,17][slot]+adjust)),redbag=Math.min(98,Math.max(10,[83,78,48,73,18,65,34,23][slot]+adjust)),preN=Math.min(98,Math.max(10,[75,70,46,61,21,53,32,16][slot]+adjust));
+  const sid=String(ix===2?730510001+i:731000001+ix*100+i),owner=person.nick,track=person.track;
+  const m={id:'m'+sid,sid,name:extra?n+series+industry+(i%2?'工作室':'生活馆'):ix===2?shoeNames[i]:n+industry+'生活馆',industry,owner,track,product:'橙选·'+products[ix],productId:'P'+sid,eligible:true,linked:i!==7,claim:'已认领',gmvValue:extra?round([391.4,231.6,87.2,179.5,42.8,105.6,55.1,28.9][slot]*(0.6+(i*7+ix)%11/10)+ix*1.1):[391.4,231.6,87.2,179.5,42.8,105.6,55.1,28.9][slot]+ix*1.1,yoyValue:round([14.2,7.8,-8.3,11.6,-19.4,4.5,-9.2,-12.6][slot]+(extra?adjust:0)),material,coupon,redbag,preN,campaign:[72,58,39,52,14,32,18,11][slot],signup:extra?(i+ix)%5!==0:i<4,hot:i%3!==0,couponJoined:extra?(i+ix)%4!==0:i<4,redbagSet:extra?(i+ix)%5!==0:i<5,preNJoined:extra?(i+ix)%3!==0:i<4,live:i%3===0?0:2,newProducts:i%3===0?0:3,shortVideos:i%3,productCount:[100,300,200,400,200,100,300,200][slot],materialCount:material===null?null:material,seedIndex:extra?64+ix*64+(i-8):ix*8+i,seedActivity:[i%3===0?0:3,i%3===0?0:2,i%3],quality:missing?'资料待核对':'完整',source:'SYN-MERCHANTS-01',updatedDay:seedDay};
   applyFacts(m);
   m.gaps=[];for(const k of ['material','coupon','redbag','preN'])if(m[k]!==null&&(m[k]<60||(k==='coupon'&&!m.couponJoined)||(k==='redbag'&&!m.redbagSet)||(k==='preN'&&!m.preNJoined)))m.gaps.push(k);
   if(!m.signup)m.gaps.push('signup');if(!m.hot)m.gaps.push('hot');if(!m.newProducts)m.gaps.push('newprod');if(!m.live)m.gaps.push('live');if(m.yoyValue<0)m.gaps.push('recall');
-  m.st=m.tag=missing?'资料待核对':m.gaps.length>=5?'风险':m.gaps.length?'预警':'安全';m.scale=m.gmvValue>=300?'头部':m.gmvValue>=100?'腰部':'长尾';m.tier='T'+(i<2?8:i<4?6:4);m.gmv=m.gmvValue.toFixed(1)+'万';m.yoy=(m.yoyValue>=0?'+':'')+m.yoyValue+'%';return Object.freeze(m);
+  m.st=m.tag=missing?'资料待核对':m.gaps.length>=5?'风险':m.gaps.length?'预警':'安全';m.scale=m.gmvValue>=300?'头部':m.gmvValue>=100?'腰部':'长尾';m.tier='T'+(slot<2?8:slot<4?6:4);m.gmv=m.gmvValue.toFixed(1)+'万';m.yoy=(m.yoyValue>=0?'+':'')+m.yoyValue+'%';return Object.freeze(m);
  }));
  const byId=sid=>merchants.find(m=>m.sid===String(sid));
  function allowed(m,a){return !!m&&(a.role===0||(m.industry===a.industry&&(a.role===2?m.owner===a.nick:a.track==='all'||m.track===a.track)));}
@@ -76,7 +88,7 @@
   const age=Math.round((Date.parse(seedDay+'T12:00:00+08:00')-Date.parse(ds+'T12:00:00+08:00'))/DAY);
   const rows=merchants.map((base,index)=>{
    if(!age)return base;
-   const m=copy(base),phase=(index%8)*0.67+Math.floor(index/8)*0.23;
+   index=base.seedIndex;const m=copy(base),phase=(index%8)*0.67+Math.floor(index/8)*0.23;
    const vary=(value,offset=0,max=100)=>value===null?null:Math.max(0,Math.min(max,round(value+(Math.sin(age*0.61+phase+offset)-Math.sin(phase+offset))*7.5)));
    for(const [i,key] of ['material','coupon','redbag','preN'].entries())m[key]=vary(base[key],i*0.8);
    m.productCount=Math.max(1,base.productCount+Math.round((Math.sin(age*0.22+phase)-Math.sin(phase))*base.productCount*0.12));
@@ -100,8 +112,8 @@
  const campaign={id:'DEMO-AUTUMN-01',name:'秋日经营核对（演示）',source:'SYN-POLICY-01 · 本作品自拟规则',cooldownHours:24,maxSevenDays:2,deadline:shift(day(),14),versions:{v1:{label:'V1',threshold:60,description:'经营指标低于60%或尚未配置时提醒'},v2:{label:'V2',threshold:70,description:'经营指标低于70%或尚未配置时提醒'}}};
  function gaps(m,version='v1'){const v=campaign.versions[version]||campaign.versions.v1;return [...new Set([...m.gaps.filter(k=>!['material','coupon','redbag','preN'].includes(k)),...['material','coupon','redbag','preN'].filter(k=>m[k]!==null&&(m[k]<v.threshold||(k==='coupon'&&!m.couponJoined)||(k==='redbag'&&!m.redbagSet)||(k==='preN'&&!m.preNJoined)))])];}
  function candidates(a,key,version){return scope(a).filter(m=>key==='missing'?m.quality!=='完整':gaps(m,version).includes(key));}
- function legacySeedLogs(){return merchants.filter((m,i)=>i%3===0).map((m,i)=>({d:shift(seedDay,-3),t:shift(seedDay,-3)+' 10:30',act:campaign.name,campaignId:campaign.id,ind:m.industry,nick:m.owner,mer:m.name,sid:m.sid,chn:'企业消息',talk:'合成历史样例',st:i%5===0?'发送失败':'发送成功',re:i%5===0?'—':i%4===0?'已回复':'未读',ac:i%5===0?'—':i%4===0?'已行动':'未行动',source:'SYN-RECEIPTS-01'}));}
- function seedLogs(){const activities=[['店铺素材完善','素材字段补齐提醒'],['消费券配置核对','消费券设置核对'],['前N报名提醒','报名资料确认'],['商品资料更新','商品信息更新提醒'],['店铺红包配置核对','红包设置核对']],channels=['企业消息','协作消息','商家站内信'];return [...legacySeedLogs(),...activities.flatMap(([act,talk],a)=>merchants.map((m,i)=>{const code=(i+a*3)%10,st=i%16===0||code===0?'待发送':i%16===1||code===1?'发送失败':'发送成功',re=st!=='发送成功'?'—':i%10<5&&code<7?'已回复':(i+2*a)%3===0?'未读':'已读未回',ac=st!=='发送成功'?'—':re==='已回复'&&i%10<3?'已行动':re==='已回复'?'部分完成':'未行动',d=shift(seedDay,-(a*5+1+i%3)),t=d+' '+String(9+(i+a)%10).padStart(2,'0')+':'+String((i*7+a*11)%60).padStart(2,'0');return {d,t,act:act+'（演示）',campaignId:'SYN-HISTORY-CAM-'+(a+1),ind:m.industry,nick:m.owner,mer:m.name,sid:m.sid,chn:channels[(i+a)%channels.length],talk,st,re,ac,source:'SYN-RECEIPTS-02'};}))];}
+ function legacySeedLogs(){return merchants.filter(m=>m.seedIndex<64).sort((a,b)=>a.seedIndex-b.seedIndex).filter((m,i)=>i%3===0).map((m,i)=>({d:shift(seedDay,-3),t:shift(seedDay,-3)+' 10:30',act:campaign.name,campaignId:campaign.id,ind:m.industry,nick:m.owner,mer:m.name,sid:m.sid,chn:'企业消息',talk:contactActivities[0].talks[i%3],st:i%5===0?'发送失败':'发送成功',re:i%5===0?'—':i%4===0?'已回复':'未读',ac:i%5===0?'—':i%4===0?'已行动':'未行动',source:'SYN-RECEIPTS-01'}));}
+ function seedLogs(){return [...legacySeedLogs(),...contactActivities.flatMap((activity,a)=>merchants.map((m,i)=>{const code=(i+a*3)%10,st=i%16===0||code===0?'待发送':i%16===1||code===1?'发送失败':'发送成功',re=st!=='发送成功'?'—':i%10<5&&code<7?'已回复':(i+2*a)%3===0?'未读':'已读未回',ac=st!=='发送成功'?'—':re==='已回复'&&i%10<3?'已行动':re==='已回复'?'部分完成':'未行动',d=shift(seedDay,-(a*5+i%3)),t=d+' '+String(9+(i+a)%10).padStart(2,'0')+':'+String((i*7+a*11)%60).padStart(2,'0');return {d,t,act:activity.name+'（演示）',campaignId:activity.id,ind:m.industry,nick:m.owner,mer:m.name,sid:m.sid,chn:contactChannels[(i+a)%contactChannels.length],talk:activity.talks[(i+a)%activity.talks.length],st,re,ac,source:'SYN-RECEIPTS-03'};}))];}
 
  const seedReceipts=seedLogs();
  function reason(m,{actor,tasks=[],taskSel=null,campaignId=campaign.id,version='v1',history=[],now=clock(),ignoreTaskId=null,checkGaps=true}){
@@ -121,5 +133,5 @@
  function transition(m,next,at=clock(),failure=''){if(!transitions[m.status]?.includes(next))throw Error('不允许从 '+m.status+' 变更为 '+next);if(next==='failed'&&!failure.trim())throw Error('失败需要填写原因');if(next==='submitted'&&m.status==='failed'&&(m.attempts||1)>=3)throw Error('最多模拟3次尝试');if(next==='submitted'&&m.status==='failed')m.attempts=(m.attempts||1)+1;m.status=next;m.events=m.events||[];m.events.push({at,status:next,reason:failure});if(failure)m.failure=failure;if(next==='submitted')m.failure='';return m;}
  function history(tasks){return [...seedReceipts.map(r=>({sid:r.sid,campaignId:r.campaignId,at:r.d+'T10:30:00+08:00',status:r.ac==='已行动'?'acted':r.st==='发送失败'?'failed':'sent',taskId:'seed-'+r.sid})),...tasks.filter(t=>!t.legacy).flatMap(t=>t.merchants.map(m=>({sid:m.sid,campaignId:t.campaignId,at:m.attemptAt||m.sentAt||t.executedAt||t.createdAt,status:m.status||t.status,taskId:t.id})))];}
  function fingerprint(config,version){return JSON.stringify({list:config.list.map(m=>String(m.sid)).sort(),tasks:[...(config.tasks||[])].sort(),taskSel:Object.entries(config.taskSel||{}).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>[k,[...v].sort()]),text:config.text,channels:Object.keys(config.chn||{}).filter(k=>config.chn[k]).sort(),when:config.when,date:config.when==='plan'?config.date:'',time:config.when==='plan'?config.time:'',content:config.content,version});}
- return {DAY,clock,copy,day,time,shift,scheduled,industries,seedDay,datasetVersion,historyStart,merchants,byId,allowed,scope,metrics,targets,metricInfo,evidence,activityTotal,metricValues,metricSummary,snapshotAt,scopeAt,metricsAt,metricSeries,campaign,gaps,candidates,seedReceipts,reason,assess,transition,history,fingerprint};
+ return {DAY,clock,copy,day,time,shift,scheduled,industries,staffRoster,contactActivities,contactChannels,seedDay,datasetVersion,historyStart,merchants,byId,allowed,scope,metrics,targets,metricInfo,evidence,activityTotal,metricValues,metricSummary,snapshotAt,scopeAt,metricsAt,metricSeries,campaign,gaps,candidates,seedReceipts,reason,assess,transition,history,fingerprint};
 });
