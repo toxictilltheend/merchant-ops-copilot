@@ -56,3 +56,10 @@ body{padding-bottom:32px;background:var(--seed-bg);font-size:13px;line-height:1.
 
 /* Keep the four tools without a duplicated workspace label or notice banner. */
 .demo-strip{justify-content:flex-end}.demo-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:100%}
+
+/* Scope explanation and expandable personnel progress. */
+.rolehint{margin:0 0 14px;padding:10px 14px;border:1px dashed #efd3bf;background:#fcfaf7;line-height:1.8}.rt-h:focus-visible,#rtStaff tr.trk:focus-visible{outline:2px solid #e99357;outline-offset:-2px}#tblStaff .rt-h{flex-wrap:wrap}#tblStaff .rt-fil{flex-wrap:wrap;gap:8px}@media(max-width:800px){#tblStaff .rt-tip{width:100%;margin-left:0}#tblStaff .rt-h{gap:6px}.rolehint{padding:9px 11px}}
+
+.sc-progress-empty{text-align:center!important;padding:22px!important;color:#94745b!important}
+
+@media(max-width:800px){#tblStaff .rt .fx:not(:first-child){position:static}#tblStaff .rt-scroll{scrollbar-width:thin}}
