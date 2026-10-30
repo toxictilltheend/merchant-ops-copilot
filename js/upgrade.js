@@ -186,8 +186,7 @@
  /* Replace row-bound closures from the compatibility layer. */
  const columnMap={'成交30d':3,'YoY':4,'消费券报名':6,'消费券渗透':7,'店铺红包':8,'红包渗透':9,'前N报名':10,'前N渗透':11,'多素材覆盖率':5};
  const oldColumnBox=$('#colPicker .pk-opts'),columnBox=oldColumnBox.cloneNode(true);oldColumnBox.replaceWith(columnBox);columnBox.onclick=e=>{const opt=e.target.closest('[data-column]');if(!opt)return;opt.classList.toggle('on');const index=+opt.dataset.column;for(const tr of [$('table:has(.mrow) thead tr'),...allRows()])if(tr?.children[index])tr.children[index].style.display=opt.classList.contains('on')?'':'none';};
- const strip=$('.demo-strip');strip.innerHTML='<span><i></i>商策工作空间 <b>合成数据展示</b></span><span>'+button('三分钟体验','SC.openScenarios()')+button('活动规则','SC.openRules()')+button('草稿与任务','SC.openLibrary()')+button('重置演示','SC.reset()')+'</span>';
- const disclaimer=document.createElement('aside');disclaimer.className='sc-disclaimer';disclaimer.setAttribute('role','note');disclaimer.innerHTML='<b>所有数据和信息仅做展示，不是真实数据。</b> 商家、商品、经营指标、活动规则、人员和回执均为合成；规则驱动助手不接入真实大模型，任务不会发送真实消息。';strip.after(disclaimer);
+ const strip=$('.demo-strip');strip.innerHTML='<div class="demo-actions" role="group" aria-label="演示工具">'+button('三分钟体验','SC.openScenarios()')+button('活动规则','SC.openRules()')+button('草稿与任务','SC.openLibrary()')+button('重置演示','SC.reset()')+'</div>';
 
  document.querySelector('.sc-quick-questions')?.remove();document.querySelector('.sc-save-state')?.remove();
  $('.sc-role-caption').textContent='角色用于演示范围筛选，不是线上账号权限。经营看板、异常名单和商家预览使用同一合成数据模型。';

@@ -53,3 +53,6 @@ body{padding-bottom:32px;background:var(--seed-bg);font-size:13px;line-height:1.
 
 /* Reference column geometry: the compact composer ends at the content baseline. */
 .app-main{grid-template-columns:minmax(0,1fr) 250px;align-items:stretch}.app-body{padding:15px 18px 17px}.xl-rail{display:flex;flex-direction:column;align-self:stretch;padding:12px 12px 17px}.xl-rail #alList{flex:1 1 auto}.xl-rail .xl-rail-f{margin-top:auto;padding-top:14px}.xl-rail .xl-inp{background:#f5f6f8;border:1px solid #e2e5ec;border-radius:11px;padding:8px 9px 7px}.xl-rail .xl-inp input{font-size:10.5px;line-height:1.6}.xl-rail .xl-inp .rw{margin-top:8px}.xl-rail .sc-quick-questions,.xl-rail .sc-save-state{display:none}.xl-rail .xl-rail-f .xl-inp{width:100%;box-sizing:border-box}.xl-rail #alList .al{min-height:54px;padding:8px 10px}@media(max-width:800px){.app-main{display:flex}.app-body{padding:12px}.xl-rail{padding:12px}.xl-rail .xl-rail-f{margin-top:0;padding-top:14px}}
+
+/* Keep the four tools without a duplicated workspace label or notice banner. */
+.demo-strip{justify-content:flex-end}.demo-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:100%}
