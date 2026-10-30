@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#EA6A2A"><meta name="description" content="商策运营工作台：经营指标、商家诊断与触达编排的可操作合成业务演示。"><link rel="icon" href="data:,">
 <title>商策 · 商家运营工作台</title>
-<link rel="stylesheet" href="styles/base.css?v=769fe41a9da1"><link rel="stylesheet" href="styles/theme.css?v=31e60093f5fb">
+<link rel="stylesheet" href="styles/base.css?v=769fe41a9da1"><link rel="stylesheet" href="styles/theme.css?v=bd644623dcb5">
 </head>
 <body>
 
@@ -54,10 +54,10 @@
         <span class="idf-l">运营角色</span>
         <select id="idRole" aria-label="运营角色" onchange="setRoleUI(this.value)">
           <option value="0">超级管理员</option>
-          <option value="1a">行业 负责人</option>
-          <option value="1i">行业 负责人（原创设计 赛道）</option>
-          <option value="1c">行业 负责人（产业带 赛道）</option>
-          <option value="2" selected>运营专员</option>
+          <option value="1a">行业 leader</option>
+          <option value="1i">行业 leader（ifashion 赛道）</option>
+          <option value="1c">行业 leader（产业带 赛道）</option>
+          <option value="2" selected>行业小二</option>
         </select>
       </label>
       
@@ -131,7 +131,7 @@
             <div class="rt-h" onclick="toggleRtable('tblInd')">
               <span class="rt-t">各子行业进度</span>
               <span class="rt-sub">8 个子行业 · 指标口径与上方指标栏完全一致</span>
-              <span class="rt-tip">目标值来自<b>演示目标 · 分行业目标</b> · 表格可横向滚动</span>
+              <span class="rt-tip">目标值来自<b>目标设置 · 分行业目标</b> · 表格可横向滚动</span>
               <span class="rt-exp">›</span>
             </div>
             <div class="rt-body">
@@ -146,19 +146,19 @@
           
           <div class="rtable collapsed" id="tblStaff">
             <div class="rt-h" onclick="toggleRtable('tblStaff')">
-              <span class="rt-t">专员明细进度</span>
+              <span class="rt-t">小二明细进度</span>
               <span class="rt-sub" id="stSub"></span>
-              <span class="rt-tip">目标值来自<b>演示目标 · 专员目标</b> · 表格可横向滚动</span>
+              <span class="rt-tip">目标值来自<b>目标设置 · 小二目标</b> · 表格可横向滚动</span>
               <span class="rt-exp">›</span>
             </div>
             <div class="rt-body">
               <div class="rt-fil">
                 <span class="fil-l">行业名称</span>
                 <input type="text" id="stFilInd" class="fil-inp sm" aria-label="按行业名称筛选" placeholder="行业名称" oninput="filStaff()">
-                <span class="fil-l">专员花名</span>
-                <input type="text" id="stFilNick" class="fil-inp sm" aria-label="按专员花名筛选" placeholder="花名" oninput="filStaff()">
-                <span class="fil-l">专员工号</span>
-                <input type="text" id="stFilNo" class="fil-inp sm" aria-label="按专员工号筛选" placeholder="工号" oninput="filStaff()">
+                <span class="fil-l">小二花名</span>
+                <input type="text" id="stFilNick" class="fil-inp sm" aria-label="按小二花名筛选" placeholder="花名" oninput="filStaff()">
+                <span class="fil-l">小二工号</span>
+                <input type="text" id="stFilNo" class="fil-inp sm" aria-label="按小二工号筛选" placeholder="工号" oninput="filStaff()">
               </div>
               <div class="rt-scroll"><table class="rt" id="rtStaff"></table></div>
               <div class="mpager" id="stPager"></div>
@@ -589,6 +589,6 @@
     </div>
   </div>
 </div>
-<script defer src="vendor/xlsx.full.min.js"></script><script defer src="js/reference.js?v=af89e4a4e3aa"></script><script defer src="js/business.js?v=451fc60dd346"></script><script defer src="js/records.js?v=8380dcc3a9b9"></script><script defer src="js/enhancements.js?v=845f1fd5ad4e"></script><script defer src="js/upgrade.js?v=8b0d5c1e4fe4"></script>
+<script defer src="vendor/xlsx.full.min.js"></script><script defer src="js/reference.js?v=913073447369"></script><script defer src="js/business.js?v=451fc60dd346"></script><script defer src="js/records.js?v=8380dcc3a9b9"></script><script defer src="js/enhancements.js?v=845f1fd5ad4e"></script><script defer src="js/upgrade.js?v=1820ee29e2bb"></script>
 <div id="sc-modal" class="sc-modal" role="dialog" aria-modal="true" aria-labelledby="sc-modal-title" hidden><div class="sc-modal-box"><header><h2 id="sc-modal-title"></h2><button onclick="SC.closeModal()" aria-label="关闭">×</button></header><div id="sc-modal-body"></div></div></div><div id="sc-toast" role="status"></div></body>
 </html>

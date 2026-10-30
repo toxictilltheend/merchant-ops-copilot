@@ -23,15 +23,15 @@
   
   var ROLES = [
     { key:'admin', ttl:'服饰全量 · 大促与基础供给',
-      who:'8 个子行业 · 9,860 家商家 · 35 名专员', scope:'整个服饰（女装/男装/女鞋/男鞋/箱包/内衣/服配/手表眼镜）',
-      hint:'当前为<b>超级管理员</b>视角：指标栏为服饰全量口径，下方可下钻<b>各子行业进度</b>与<b>全部专员明细进度</b>，指标定义与上方完全一致。',
+      who:'8 个子行业 · 9,860 家商家 · 35 名小二', scope:'整个服饰（女装/男装/女鞋/男鞋/箱包/内衣/服配/手表眼镜）',
+      hint:'当前为<b>超级管理员</b>视角：指标栏为服饰全量口径，下方可下钻<b>各子行业进度</b>与<b>全部小二明细进度</b>，指标定义与上方完全一致。',
       // 14 metrics: [m1..m14] 当前值 / 目标值
       cv:[70,23940,56,17955,70,6156,58,40,6936,4959,39,2394,274,1026],
       tv:[80,35000,70,28000,80,9860,75,55,9860,8000,50,4000,500,2000]
     },
     { key:'负责人', ttl:'女装 · 大促与基础供给',
-      who:'女装 2,680 家 · 6 名专员', scope:'本行业（女装）全部商家',
-      hint:'当前为<b>行业 负责人</b>视角：指标栏为本行业口径，下方只能看到<b>本运营专员明细进度</b>，看不到其他行业与全服饰大盘。',
+      who:'女装 2,680 家 · 6 名小二', scope:'本行业（女装）全部商家',
+      hint:'当前为<b>行业 leader</b>视角：指标栏为本行业口径，下方只能看到<b>本行业小二明细进度</b>，看不到其他行业与全服饰大盘。',
       cv:[75,3344,61,2552,76,862,64,45,1980,722,43,334,46,150],
       tv:[80,4800,70,3800,80,2680,75,55,2680,1200,50,540,90,280]
     },
@@ -200,9 +200,9 @@
       else { cv.push(sc); tv.push(st); }
     }
     return {key:'负责人', ttl:LEADER_IND + ' · ' + LEADER_TRACK + ' · 大促与基础供给',
-      who:LEADER_IND + ' ' + LEADER_TRACK + ' 赛道 · ' + rows.length + ' 名专员',
+      who:LEADER_IND + ' ' + LEADER_TRACK + ' 赛道 · ' + rows.length + ' 名小二',
       scope:LEADER_IND + '（' + LEADER_TRACK + ' 赛道）',
-      hint:'当前为<b>' + LEADER_IND + ' · ' + LEADER_TRACK + ' 负责人</b>视角：指标栏为本行业<b>' + LEADER_TRACK + ' 赛道</b>口径，专员明细进度仅显示该赛道专员。',
+      hint:'当前为<b>' + LEADER_IND + ' · ' + LEADER_TRACK + ' 负责人</b>视角：指标栏为本行业<b>' + LEADER_TRACK + ' 赛道</b>口径，小二明细进度仅显示该赛道小二。',
       cv:cv, tv:tv};
   }
   
@@ -216,9 +216,9 @@
     var d = indData();
     var cnt = STAFF.filter(function(r){ return r.ind === LEADER_IND; }).length;
     return {key:'负责人', ttl:LEADER_IND + ' · 大促与基础供给',
-      who:LEADER_IND + ' · ' + cnt + ' 名专员',
+      who:LEADER_IND + ' · ' + cnt + ' 名小二',
       scope:'本行业（' + LEADER_IND + '）全部商家',
-      hint:'当前为<b>' + LEADER_IND + ' 行业 负责人</b>视角：指标栏为本行业口径，下方只能看到<b>本运营专员明细进度</b>，看不到其他行业与全服饰大盘。你还负责：' + LEADER_INDS.join(' / ') + '（在「负责行业」处逐个切换查看，不做跨行业汇总）。',
+      hint:'当前为<b>' + LEADER_IND + ' 行业 leader</b>视角：指标栏为本行业口径，下方只能看到<b>本行业小二明细进度</b>，看不到其他行业与全服饰大盘。你还负责：' + LEADER_INDS.join(' / ') + '（在「负责行业」处逐个切换查看，不做跨行业汇总）。',
       cv:d.rc, tv:d.rt};
   }
   
@@ -281,7 +281,7 @@
   
   var TRACK_NAMES = ['原创设计','产业带'];
 
-  // 由行业底表拆分出专员明细
+  // 由行业底表拆分出小二明细
   var STAFF = (function(){
     var out = [], jd = [3,-2,1,-3,2,-1], jr = [-9,7,-4,6,-3,3];
     IND.forEach(function(ind, i){
@@ -298,7 +298,7 @@
           cur.push(v);
           tgt.push(isR ? target : Math.round(target / k));
         }
-        rows.push({ind:ind.n, nick:'专员' + LETTER.charAt(s), no:String(900000 + i*100 + (s+1)*7), track: s < Math.ceil(k/2) ? '原创设计' : '产业带', cur:cur, tgt:tgt});
+        rows.push({ind:ind.n, nick:'小二' + LETTER.charAt(s), no:String(900000 + i*100 + (s+1)*7), track: s < Math.ceil(k/2) ? '原创设计' : '产业带', cur:cur, tgt:tgt});
       }
       out = out.concat(rows);
     });
@@ -371,7 +371,7 @@
     });
     document.getElementById('rtInd').innerHTML = html + '</tbody>';
   }
-  // 表单二：专员明细进度（超管看全部行业 / 负责人 只看本行业）
+  // 表单二：小二明细进度（超管看全部行业 / 负责人 只看本行业）
   var stPage = 1, stSize = 8;
   var STAFF_FIL = {ind:'', nick:'', no:''};
   function filStaff(){
@@ -393,7 +393,7 @@
         && (!o || String(r.no).indexOf(o) > -1);
     });
   }
-  // 一组专员行聚合为一条口径：率类取均值，值类取求和
+  // 一组小二行聚合为一条口径：率类取均值，值类取求和
   function aggRows(list){
     var cv = [], tv = [];
     for(var i = 0; i < ALL_METRICS.length; i++){
@@ -414,13 +414,13 @@
   }
   function renderStaffTable(){
     var rows = staffRows();
-    var leads = [{t:'所属行业', w:88}, {t:'赛道', w:72}, {t:'专员花名', w:80}, {t:'专员工号', w:78}];
+    var leads = [{t:'所属行业', w:88}, {t:'赛道', w:72}, {t:'小二花名', w:80}, {t:'小二工号', w:78}];
     var grouped = (ROLE === 1 && LEADER_TRACK === 'all');
     var total = grouped ? 1 : (Math.ceil(rows.length / stSize) || 1);
     if(stPage > total) stPage = 1;
     var html = rtHead(leads) + '<tbody>';
     if(grouped){
-      // 双赛道 负责人：按赛道输出「汇总行 + 可展开的专员明细」，本运营专员量级小，不再分页
+      // 双赛道 负责人：按赛道输出「汇总行 + 可展开的小二明细」，本行业小二量级小，不再分页
       TRACK_NAMES.forEach(function(t){
         var tl = rows.filter(function(x){ return x.track === t; });
         if(!tl.length) return;
@@ -428,7 +428,7 @@
         html += rtBody({
           leads:[LEADER_IND, t, '<span class="cvt">' + (open ? '▾' : '▸') + '</span>赛道汇总', tl.length + ' 名'],
           cur:ag.cur, tgt:ag.tgt
-        }, leads, 'trk', 'onclick="stToggleTrack(\'' + t + '\')" title="点击' + (open ? '收起' : '展开') + ' ' + t + ' 赛道专员明细"');
+        }, leads, 'trk', 'onclick="stToggleTrack(\'' + t + '\')" title="点击' + (open ? '收起' : '展开') + ' ' + t + ' 赛道小二明细"');
         if(open) tl.forEach(function(r){
           html += rtBody({leads:[r.ind, r.track, r.nick, r.no], cur:r.cur, tgt:r.tgt}, leads);
         });
@@ -446,9 +446,9 @@
     var trackTxt = (ROLE === 1 && LEADER_TRACK !== 'all') ? LEADER_TRACK + ' 赛道 · ' : '';
     var filTxt = rows.length === totalStaff ? '' : ' · 筛选后 ' + rows.length + ' 名';
     document.getElementById('stSub').textContent = (ROLE === 0
-      ? '全部 8 个子行业 · 共 ' + totalStaff + ' 名专员'
-      : LEADER_IND + ' · ' + trackTxt + '共 ' + totalStaff + ' 名专员') + filTxt;
-    var pg = '<span class="mp-info">共 <b>' + rows.length + '</b> 名专员 · 第 ' + stPage + '/' + total + ' 页</span><span class="mp-sp"></span>';
+      ? '全部 8 个子行业 · 共 ' + totalStaff + ' 名小二'
+      : LEADER_IND + ' · ' + trackTxt + '共 ' + totalStaff + ' 名小二') + filTxt;
+    var pg = '<span class="mp-info">共 <b>' + rows.length + '</b> 名小二 · 第 ' + stPage + '/' + total + ' 页</span><span class="mp-sp"></span>';
     if(total > 1){
       pg += '<span class="mp-btn" onclick="stGo(' + (stPage-1) + ')">‹ 上一页</span>';
       for(var k=1; k<=total; k++){
@@ -519,7 +519,7 @@
       return {rule:RISK_RULES[3], dt:'处于行业 P' + (8 + h % 20) + ' 分位，低于阈值 P30'};
     return null;
   }
-  // 某活动下命中风险规则的专员清单：每位专员带异常指标、当前值/目标值、命中的风险规则
+  // 某活动下命中风险规则的小二清单：每位小二带异常指标、当前值/目标值、命中的风险规则
   function alBadStaff(g){
     var out = [];
     staffRows().forEach(function(r){
@@ -533,7 +533,7 @@
     return out;
   }
 
-  var ALERT_HTML0 = null;   // 缓存专员视角的原始商家层告警
+  var ALERT_HTML0 = null;   // 缓存小二视角的原始商家层告警
   function renderAlerts(){
     var box = document.getElementById('alList'), cnt = document.getElementById('alCnt');
     if(!box) return;
@@ -552,13 +552,13 @@
     }).filter(function(a){ return a.people > 0; });
 
     html += '<div class="al sum"><span class="ic info"></span>' +
-      '<span class="txt">' + scope + '异常汇总：<b>' + acts.length + '</b> 个活动存在专员不达标 · 涉及 <b>' +
-      Object.keys(allBad).length + '</b> / ' + rows.length + ' 位专员</span></div>';
+      '<span class="txt">' + scope + '异常汇总：<b>' + acts.length + '</b> 个活动存在小二不达标 · 涉及 <b>' +
+      Object.keys(allBad).length + '</b> / ' + rows.length + ' 位小二</span></div>';
     acts.forEach(function(a){
       var ic = a.ratio >= 0.6 ? 'risk' : (a.ratio >= 0.3 ? 'warn' : 'info');
       html += '<div class="al clk" data-act="' + a.n + '" onclick="alDrill(\'' + a.n + '\')">' +
         '<span class="ic ' + ic + '">•</span>' +
-        '<span class="txt"><span class="act">' + a.n + '</span>：<b>' + a.people + '</b> 位专员不达标</span>' +
+        '<span class="txt"><span class="act">' + a.n + '</span>：<b>' + a.people + '</b> 位小二不达标</span>' +
         '<span class="go">查看不达标清单 ›</span>' +
         '<span class="num' + (ic === 'risk' ? ' hot' : '') + '">' + a.people + '</span></div>';
     });
@@ -569,16 +569,16 @@
   
   var AL_DRILL = null;   // {act, list}
   var AL_VIEW = [];      // 经筛选后的清单（去提醒按此范围下发）
-  var AL_PICK = {};      // 清单里被勾选的专员
+  var AL_PICK = {};      // 清单里被勾选的小二
   var AL_FIL = {nick:'', no:'', met:'', rule:''};
   function alDrill(name){
     if(typeof XL_BUSY !== 'undefined' && XL_BUSY) return;
     var g = actGroup(name); if(!g) return;
     var list = alBadStaff(g);
-    if(!list.length){ xlToast('该活动当前没有不达标的专员'); return; }
+    if(!list.length){ xlToast('该活动当前没有不达标的小二'); return; }
     AL_DRILL = {act:name, list:list};
     xlOpen();
-    xlPushUser('「' + name + '」这个活动有哪些专员不达标？不达标原因是什么？');
+    xlPushUser('「' + name + '」这个活动有哪些小二不达标？不达标原因是什么？');
     alFlow();
   }
   function alFlow(){
@@ -586,9 +586,9 @@
     XL_BUSY = true;
     var w = xlPushAI();
     var box = xlStepsBox(w, [
-      '正在按「' + name + '」的指标口径检索' + (ROLE === 0 ? '服饰全量' : LEADER_IND) + '专员的目标完成情况……',
-      '已定位 ' + list.length + ' 位专员存在不达标指标，正在调用策略中心的异常规则做原因归因……',
-      '归因完成，已生成不达标专员清单：指标当前值 / 目标值，以及命中的风险规则。'
+      '正在按「' + name + '」的指标口径检索' + (ROLE === 0 ? '服饰全量' : LEADER_IND) + '小二的目标完成情况……',
+      '已定位 ' + list.length + ' 位小二存在不达标指标，正在调用策略中心的异常规则做原因归因……',
+      '归因完成，已生成不达标小二清单：指标当前值 / 目标值，以及命中的风险规则。'
     ]);
     xlStep(box, 0, 'run');
     setTimeout(function(){ xlStep(box, 0, 'done'); xlStep(box, 1, 'run'); }, 620);
@@ -596,7 +596,7 @@
     setTimeout(function(){
       xlStep(box, 2, 'done');
       alStaffCard(w);
-      xlText(w, '「' + name + '」共 <b>' + list.length + '</b> 位专员不达标，不达标原因来自<b>策略中心 · 异常规则</b>的判定结果。可按花名、工号、不达标指标、风险规则筛选；勾选后点「去提醒」，会在对应专员<b>今日待办</b>里该活动的任务上打上「' + ASSIGNER + '提醒」标签。');
+      xlText(w, '「' + name + '」共 <b>' + list.length + '</b> 位小二不达标，不达标原因来自<b>策略中心 · 异常规则</b>的判定结果。可按花名、工号、不达标指标、风险规则筛选；勾选后点「去提醒」，会在对应小二<b>今日待办</b>里该活动的任务上打上「' + ASSIGNER + '提醒」标签。');
       XL_BUSY = false;
     }, 1900);
   }
@@ -621,22 +621,22 @@
   function alStaffCard(w){
     AL_FIL = {nick:'', no:'', met:'', rule:''};
     var d = document.createElement('div'); d.className = 'xl-card'; d.id = 'alCard';
-    d.innerHTML = '<div class="xl-card-h">' + AL_DRILL.act + ' · 不达标专员清单（<b id="alCardN">' + AL_DRILL.list.length + '</b> 位）' +
-      '<span class="sp"></span><span class="lk" onclick="xlToast(\'已导出不达标专员清单.xlsx\')">下载表格</span>' +
+    d.innerHTML = '<div class="xl-card-h">' + AL_DRILL.act + ' · 不达标小二清单（<b id="alCardN">' + AL_DRILL.list.length + '</b> 位）' +
+      '<span class="sp"></span><span class="lk" onclick="xlToast(\'已导出不达标小二清单.xlsx\')">下载表格</span>' +
       '<span class="lk" onclick="xlFold(\'alCard\', this)">收起明细 ^</span></div>' +
       '<div class="xl-card-b">' +
         '<div class="xl-fil al-fil">' +
-          '<span class="fw">专员花名<input id="alFNick" placeholder="请输入" oninput="alFilter()"></span>' +
-          '<span class="fw">专员工号<input id="alFNo" placeholder="请输入" oninput="alFilter()"></span>' +
+          '<span class="fw">小二花名<input id="alFNick" placeholder="请输入" oninput="alFilter()"></span>' +
+          '<span class="fw">小二工号<input id="alFNo" placeholder="请输入" oninput="alFilter()"></span>' +
           '<span class="fw">不达标指标<select id="alFMet" onchange="alFilter()">' + alOptHtml(alMetOpts()) + '</select></span>' +
           '<span class="fw">命中风险规则<select id="alFRule" onchange="alFilter()">' + alOptHtml(alRuleOpts()) + '</select></span>' +
           '<span class="rs" onclick="alResetFil()">重置筛选</span>' +
         '</div>' +
         '<div class="xl-tblwrap"><table class="xl-tbl"><thead><tr><th style="width:34px"></th>' +
-        '<th>专员花名</th><th>所属行业 · 赛道</th><th>不达标指标</th><th>当前值 / 目标值</th>' +
+        '<th>小二花名</th><th>所属行业 · 赛道</th><th>不达标指标</th><th>当前值 / 目标值</th>' +
         '<th>命中风险规则</th></tr></thead><tbody id="alTb"></tbody></table></div>' +
-        '<div class="xl-foot"><span class="btn-primary" onclick="alRemind()">去提醒（<span id="alRmN">0</span> 位专员）</span>' +
-        '<span class="note">提醒后该条待办进入对应专员的今日待办，标签为「' + ASSIGNER + '提醒」</span></div>' +
+        '<div class="xl-foot"><span class="btn-primary" onclick="alRemind()">去提醒（<span id="alRmN">0</span> 位小二）</span>' +
+        '<span class="note">提醒后该条待办进入对应小二的今日待办，标签为「' + ASSIGNER + '提醒」</span></div>' +
       '</div>';
     w.appendChild(d);
     alRenderList();
@@ -689,7 +689,7 @@
         '<td class="nm">' + x.nick + ' · ' + x.no + '</td>' +
         '<td>' + x.ind + (x.track ? ' · ' + x.track : '') + '</td>' +
         '<td>' + cMet + '</td><td>' + cVal + '</td><td>' + cRule + '</td></tr>';
-    }).join('') : '<tr><td colspan="6" class="al-none">当前筛选条件下没有命中的专员，试试放宽条件或重置筛选</td></tr>';
+    }).join('') : '<tr><td colspan="6" class="al-none">当前筛选条件下没有命中的小二，试试放宽条件或重置筛选</td></tr>';
     var n = document.getElementById('alCardN');
     if(n) n.textContent = AL_VIEW.length === AL_DRILL.list.length
       ? AL_DRILL.list.length : (AL_VIEW.length + ' / ' + AL_DRILL.list.length);
@@ -707,7 +707,7 @@
   function alRemind(){
     if(!AL_DRILL) return;
     var list = AL_VIEW.filter(function(x){ return AL_PICK[x.ind + '/' + x.nick]; });
-    if(!list.length){ xlToast('请先勾选要提醒的专员'); return; }
+    if(!list.length){ xlToast('请先勾选要提醒的小二'); return; }
     
     var act = AL_DRILL.act, hit = -1, i, mets = [];
     for(i = 0; i < TODOS[2].length; i++){
@@ -722,17 +722,17 @@
     TODOS[2][hit].warn = ASSIGNER;
     TODOS[2][hit].done = false;
     renderTodos();
-    xlText(xlPushAI(), '已提醒 <b>' + list.length + '</b> 位专员关注「' + act + '」的不达标指标：' +
+    xlText(xlPushAI(), '已提醒 <b>' + list.length + '</b> 位小二关注「' + act + '」的不达标指标：' +
       list.map(function(x){ return x.ind + ' ' + x.nick; }).join('、') +
-      '。这些异常专员在自己的工作台本来就能看到，因此不额外新增待办，只在他们「今日待办」里对应的<b>' +
-      TODOS[2][hit].tx + '</b>上打了<b>' + ASSIGNER + '提醒</b>标签，已完成的会重新置为待跟进。切换到<b>运营专员</b>视角即可看到标签。');
-    xlToast('已提醒 ' + list.length + ' 位专员');
+      '。这些异常小二在自己的工作台本来就能看到，因此不额外新增待办，只在他们「今日待办」里对应的<b>' +
+      TODOS[2][hit].tx + '</b>上打了<b>' + ASSIGNER + '提醒</b>标签，已完成的会重新置为待跟进。切换到<b>行业小二</b>视角即可看到标签。');
+    xlToast('已提醒 ' + list.length + ' 位小二');
   }
 
   
   var ASSIGNER = '林舟';                              // mock：下发任务的人
-  var ME = {ind:'女装', nick:'专员A'};                 // mock：当前登录的运营专员
-  // 来源仍是三种；上级从告警清单点「去提醒」时不新增待办，只在专员已有待办上追加 warn 字段（预警人花名）
+  var ME = {ind:'女装', nick:'小二A'};                 // mock：当前登录的行业小二
+  // 来源仍是三种；上级从告警清单点「去提醒」时不新增待办，只在小二已有待办上追加 warn 字段（预警人花名）
   var SRC = {auto:'告警自动生成', asg:ASSIGNER + '指派', self:'自己添加'};
   var TODOS = [
     [ // 超级管理员
@@ -740,12 +740,12 @@
       {tx:'服饰整体店铺红包完成率仅 79%，拉齐各行业口径', src:'auto', done:false},
       {tx:'对齐店铺红包、消费券的资源位分配方案', src:'self', done:true}
     ],
-    [ // 行业 负责人
+    [ // 行业 leader
       {tx:'汇总女装前N报名缺口，输出攻坚商家清单', src:'asg', done:false},
-      {tx:'女装 6 位专员店铺红包均未达标，逐个过进度', src:'auto', done:false},
+      {tx:'女装 6 位小二店铺红包均未达标，逐个过进度', src:'auto', done:false},
       {tx:'准备周会材料：女装大促供给进展', src:'self', done:true}
     ],
-    [ // 运营专员：act = 该待办对应的活动，用于和上级告警清单里的活动对齐
+    [ // 行业小二：act = 该待办对应的活动，用于和上级告警清单里的活动对齐
       {tx:'催报名：晴川鞋履研究所 等 22 家大促未报名', src:'auto', act:'好物节', done:false},
       {tx:'推动前N报名 · 高潜 18 家', src:'auto', act:'前N', done:false},
       {tx:'指导 栖木鞋履工坊 设置消费券 + 店铺红包', src:'auto', act:'消费券', done:true},
@@ -776,33 +776,33 @@
   var TK = {mode:'', inds:{}, staff:{}};
   function tkModeList(){
     if(ROLE === 0) return [
-      {k:'all',   t:'整个服饰（全部行业 + 全部专员）'},
+      {k:'all',   t:'整个服饰（全部行业 + 全部小二）'},
       {k:'ind',   t:'指定行业（可多选）'},
-      {k:'staff', t:'指定专员（可多选）'},
+      {k:'staff', t:'指定小二（可多选）'},
       {k:'self',  t:'仅自己'}
     ];
     if(ROLE === 1){
       var trkLbl = LEADER_TRACK === 'all' ? '' : ' · ' + LEADER_TRACK + ' 赛道';
       return [
         {k:'ind',   t:'本行业全员（' + LEADER_IND + trkLbl + '）'},
-        {k:'staff', t:'指定专员（本行业' + trkLbl + ' · 可多选）'},
+        {k:'staff', t:'指定小二（本行业' + trkLbl + ' · 可多选）'},
         {k:'self',  t:'仅自己'}
       ];
     }
-    return [{k:'self', t:'仅自己（专员只能给自己加待办）'}];
+    return [{k:'self', t:'仅自己（小二只能给自己加待办）'}];
   }
   function openTask(){
     TK = {mode:'', inds:{}, staff:{}};
     document.getElementById('tkName').value = '';
-    document.getElementById('tkRole').textContent = ['超级管理员','行业 负责人','运营专员'][ROLE];
+    document.getElementById('tkRole').textContent = ['超级管理员','行业 leader','行业小二'][ROLE];
     document.getElementById('tkModes').innerHTML = tkModeList().map(function(m){
       return '<span class="tk-mode" data-k="' + m.k + '" onclick="tkMode(\'' + m.k + '\')">' + m.t + '</span>';
     }).join('');
     document.getElementById('tkNote').innerHTML = ROLE === 0
-      ? '超级管理员可向<b>行业 负责人</b>与<b>运营专员</b>下发待办；下发后对方今日待办里会出现该任务，来源标记为「' + ASSIGNER + '指派」。'
+      ? '超级管理员可向<b>行业 leader</b>与<b>行业小二</b>下发待办；下发后对方今日待办里会出现该任务，来源标记为「' + ASSIGNER + '指派」。'
       : (ROLE === 1
-        ? '行业 负责人 只能向<b>本行业（' + LEADER_IND + '）专员</b>下发待办，来源标记为「' + ASSIGNER + '指派」；看不到也管不到其他行业。'
-        : '运营专员只能<b>给自己</b>添加待办，来源标记为「自己添加」；上级下发的任务会自动出现在列表里。');
+        ? '行业 leader 只能向<b>本行业（' + LEADER_IND + '）小二</b>下发待办，来源标记为「' + ASSIGNER + '指派」；看不到也管不到其他行业。'
+        : '行业小二只能<b>给自己</b>添加待办，来源标记为「自己添加」；上级下发的任务会自动出现在列表里。');
     tkMode(ROLE === 2 ? 'self' : (ROLE === 1 ? 'ind' : 'all'));
     document.getElementById('tkMask').classList.add('open');
   }
@@ -839,28 +839,28 @@
   }
   function tkSum(){
     var e = document.getElementById('tkSum'), n;
-    if(TK.mode === 'all') e.innerHTML = '下发范围：<b>整个服饰</b>（8 个行业 · ' + STAFF.length + ' 位专员）';
+    if(TK.mode === 'all') e.innerHTML = '下发范围：<b>整个服饰</b>（8 个行业 · ' + STAFF.length + ' 位小二）';
     else if(TK.mode === 'self') e.innerHTML = '下发范围：<b>仅自己</b>';
-    else if(TK.mode === 'ind' && ROLE === 1) e.innerHTML = '下发范围：<b>' + LEADER_IND + '</b> 全员专员';
+    else if(TK.mode === 'ind' && ROLE === 1) e.innerHTML = '下发范围：<b>' + LEADER_IND + '</b> 全员小二';
     else if(TK.mode === 'ind'){ n = Object.keys(TK.inds).length; e.innerHTML = n ? '已选 <b>' + n + '</b> 个行业' : '未选择行业'; }
-    else { n = Object.keys(TK.staff).length; e.innerHTML = n ? '已选 <b>' + n + '</b> 位专员' : '未选择专员'; }
+    else { n = Object.keys(TK.staff).length; e.innerHTML = n ? '已选 <b>' + n + '</b> 位小二' : '未选择小二'; }
   }
   function tkConfirm(){
     var nm = document.getElementById('tkName').value.trim();
     if(!nm){ alert('请先填写任务名称'); return; }
     var toLeader = false, toMe = false, toSelf = false, desc = '';
     if(TK.mode === 'self'){ toSelf = true; desc = '自己'; }
-    else if(TK.mode === 'all'){ toLeader = true; toMe = true; desc = '整个服饰（8 个行业 · ' + STAFF.length + ' 位专员）'; }
-    else if(TK.mode === 'ind' && ROLE === 1){ toMe = true; desc = LEADER_IND + ' 全员专员（' + STAFF.filter(function(r){ return r.ind === LEADER_IND; }).length + ' 位）'; }
+    else if(TK.mode === 'all'){ toLeader = true; toMe = true; desc = '整个服饰（8 个行业 · ' + STAFF.length + ' 位小二）'; }
+    else if(TK.mode === 'ind' && ROLE === 1){ toMe = true; desc = LEADER_IND + ' 全员小二（' + STAFF.filter(function(r){ return r.ind === LEADER_IND; }).length + ' 位）'; }
     else if(TK.mode === 'ind'){
       var ins = Object.keys(TK.inds);
       if(!ins.length){ alert('请至少选择一个行业'); return; }
       toLeader = ins.indexOf(LEADER_IND) >= 0;      // 该行业的 负责人 收到
-      toMe = ins.indexOf(ME.ind) >= 0;              // 该行业下的专员收到
+      toMe = ins.indexOf(ME.ind) >= 0;              // 该行业下的小二收到
       desc = ins.join('、') + '（共 ' + ins.length + ' 个行业）';
     } else {
       var sts = Object.keys(TK.staff);
-      if(!sts.length){ alert('请至少选择一位专员'); return; }
+      if(!sts.length){ alert('请至少选择一位小二'); return; }
       toMe = sts.indexOf(ME.ind + '/' + ME.nick) >= 0;
       desc = sts.map(function(s){ return s.replace('/', ' '); }).join('、');
     }
@@ -902,7 +902,7 @@
     {id:'p1', ic:'促', rl:'大促 PM',    nm:'临溪', no:'SC08241', ds:'节奏 / 玩法 / 资源位对接',   sc:'ALL',  inds:[],                  ow:'admin'},
     {id:'p2', ic:'品', rl:'产品对接人', nm:'青禾', no:'SC08372', ds:'工作台 / 工具需求 · Bug 反馈', sc:'ALL',  inds:[],                  ow:'admin'},
     {id:'p3', ic:'规', rl:'规则对接人', nm:'明谨', no:'SC08505', ds:'招商门槛 / 处罚 / 规则解读',   sc:'ALL',  inds:[],                  ow:'admin'},
-    {id:'p4', ic:'类', rl:'类目专员',   nm:'白露', no:'SC08638', ds:'女鞋类目策略 · 结构调优',      sc:'IND',  inds:[LEADER_IND,'女鞋'], ow:'admin'},
+    {id:'p4', ic:'类', rl:'类目小二',   nm:'白露', no:'SC08638', ds:'女鞋类目策略 · 结构调优',      sc:'IND',  inds:[LEADER_IND,'女鞋'], ow:'admin'},
     {id:'p5', ic:'招', rl:'招商对接',   nm:'南乔', no:'SC08769', ds:'新商引入 · 站外拉新审核',      sc:'IND',  inds:[LEADER_IND],        ow:'负责人'},
     {id:'p6', ic:'客', rl:'客服对接',   nm:'如许', no:'SC08109', ds:'商家工单 · 体验投诉升级',      sc:'SELF', inds:[],                  ow:'staff'}
   ];
@@ -947,7 +947,7 @@
   function bkScopeTxt(b){ return b.sc === 'ALL' ? '服饰整体' : (b.sc === 'IND' ? b.inds.join('、') : '仅自己'); }
   function bkScopeCls(b){ return b.sc === 'ALL' ? 'all' : (b.sc === 'IND' ? 'ind' : 'self'); }
 
-  // 可见性：服饰整体人人可见；单行业对该运营专员可见；仅自己只对创建人可见
+  // 可见性：服饰整体人人可见；单行业对该行业小二可见；仅自己只对创建人可见
   function bkVisible(b){
     if(b.ow === bkKey()) return true;
     if(b.sc === 'ALL') return true;
@@ -966,18 +966,18 @@
     });
   }
   function bkAffect(sc, inds){
-    if(sc === 'ALL') return '服饰全部运营专员（' + STAFF.length + ' 位）';
+    if(sc === 'ALL') return '服饰全部行业小二（' + STAFF.length + ' 位）';
     if(sc === 'IND'){
       var ns = Object.keys(inds), n = 0;
       IND.forEach(function(d){ if(ns.indexOf(d.n) >= 0) n += d.staff; });
-      return ns.length ? ns.join('、') + ' 全部专员（' + n + ' 位）' : '未选择行业';
+      return ns.length ? ns.join('、') + ' 全部小二（' + n + ' 位）' : '未选择行业';
     }
     return '仅自己';
   }
   // 卡片 / 行上的创建人短标识
   function bkOwnerShort(o){
     return o === bkKey() ? '我添加的'
-      : (o === 'admin' ? '超级管理员添加' : (o === '负责人' ? '行业 负责人 添加' : '运营专员添加'));
+      : (o === 'admin' ? '超级管理员添加' : (o === '负责人' ? '行业 leader 添加' : '行业小二添加'));
   }
 
   function renderSec(sec){
@@ -1043,7 +1043,7 @@
 
   function bkOpen(sec){
     CUR = sec || 'bk';
-    document.getElementById('bkRole').textContent = ['超级管理员','行业 负责人','运营专员'][ROLE];
+    document.getElementById('bkRole').textContent = ['超级管理员','行业 leader','行业小二'][ROLE];
     document.getElementById('bkLbList').innerHTML = '我的主页' + SEC[CUR].unit + ' <b id="bkCnt"></b> · 按住 拖动调整展示优先级';
     bkBackToList();
     document.getElementById('bkMask').classList.add('open');
@@ -1088,9 +1088,9 @@
   }
   function bkRuleTxt(){
     var u = SEC[CUR].unit;
-    if(ROLE === 2) return '运营专员只能添加<b>仅自己</b>可见的' + u + '；上级下发到<b>本行业</b>或<b>服饰整体</b>的' + u + '会自动出现在这里，只能调顺序，不能改、不能删。';
-    if(ROLE === 1) return '行业 负责人 可添加生效范围为<b>仅自己</b>或<b>本行业（' + LEADER_IND + '）</b>的' + u + '；只能改 / 删自己添加的，修改、删除会同步到该范围内所有专员。';
-    return '超级管理员可添加生效范围为<b>仅自己</b>、<b>单个行业（可多选）</b>或<b>服饰整体</b>的' + u + '；只能改 / 删自己添加的，修改、删除会同步到该范围内所有专员。';
+    if(ROLE === 2) return '行业小二只能添加<b>仅自己</b>可见的' + u + '；上级下发到<b>本行业</b>或<b>服饰整体</b>的' + u + '会自动出现在这里，只能调顺序，不能改、不能删。';
+    if(ROLE === 1) return '行业 leader 可添加生效范围为<b>仅自己</b>或<b>本行业（' + LEADER_IND + '）</b>的' + u + '；只能改 / 删自己添加的，修改、删除会同步到该范围内所有小二。';
+    return '超级管理员可添加生效范围为<b>仅自己</b>、<b>单个行业（可多选）</b>或<b>服饰整体</b>的' + u + '；只能改 / 删自己添加的，修改、删除会同步到该范围内所有小二。';
   }
   function renderBkRows(){
     var list = bkList(CUR), me = bkKey(), isPP = CUR === 'pp';
@@ -1163,7 +1163,7 @@
   function bkScopeOpts(){
     if(ROLE === 2) return [
       {k:'SELF', t:'仅自己', ok:true},
-      {k:'IND',  t:'单个行业', ok:false, why:'运营专员只能添加仅自己可见的' + SEC[CUR].unit},
+      {k:'IND',  t:'单个行业', ok:false, why:'行业小二只能添加仅自己可见的' + SEC[CUR].unit},
       {k:'ALL',  t:'服饰整体', ok:false, why:'仅超级管理员可下发到服饰整体'}
     ];
     if(ROLE === 1) return [
@@ -1179,12 +1179,12 @@
   }
   function bkScopeWhy(){
     if(BK_FORM.sc === 'SELF') return '「仅自己」：只出现在你自己的主页，后续修改 / 删除也只影响你自己。';
-    if(BK_FORM.sc === 'IND')  return '「单个行业」：出现在所选行业下<b>全部运营专员</b>的主页，后续修改 / 删除对这些人同步生效。';
-    if(BK_FORM.sc === 'ALL')  return '「服饰整体」：出现在服饰<b>全部运营专员</b>的主页，后续修改 / 删除对所有人同步生效。';
+    if(BK_FORM.sc === 'IND')  return '「单个行业」：出现在所选行业下<b>全部行业小二</b>的主页，后续修改 / 删除对这些人同步生效。';
+    if(BK_FORM.sc === 'ALL')  return '「服饰整体」：出现在服饰<b>全部行业小二</b>的主页，后续修改 / 删除对所有人同步生效。';
     return '请选择生效范围。';
   }
   function renderBkScopes(){
-    var lock = !!BK_EDIT && ROLE === 2;   // 运营专员不能调整生效范围
+    var lock = !!BK_EDIT && ROLE === 2;   // 行业小二不能调整生效范围
     document.getElementById('bkScopes').innerHTML = bkScopeOpts().map(function(o){
       var can = o.ok && !lock;
       return '<span class="tk-mode' + (BK_FORM.sc === o.k ? ' on' : '') + (can ? '' : ' dis') + '" data-k="' + o.k + '"' +
@@ -1196,15 +1196,15 @@
           return '<span class="tk-chip' + (BK_FORM.inds[d.n] ? ' on' : '') + '" onclick="bkPickInd(this,\'' + d.n + '\')">' + d.n + '</span>';
         }).join('')
       : '<span class="tk-chip on">' + LEADER_IND + '</span>' +
-        '<span class="tk-note" style="width:100%">行业 负责人 只能下发到本行业，行业不可更换。</span>';
+        '<span class="tk-note" style="width:100%">行业 leader 只能下发到本行业，行业不可更换。</span>';
     pick.classList.toggle('on', BK_FORM.sc === 'IND');
     document.getElementById('bkWhy').innerHTML = lock
-      ? '运营专员不能调整生效范围；如需让同行业其他人也看到该' + SEC[CUR].unit + '，请找 负责人 或超级管理员添加。'
+      ? '行业小二不能调整生效范围；如需让同行业其他人也看到该' + SEC[CUR].unit + '，请找 负责人 或超级管理员添加。'
       : bkScopeWhy();
   }
   function bkDeny(k){
     var o = bkScopeOpts().filter(function(x){ return x.k === k; })[0];
-    alert('当前身份不可选择该生效范围\n' + (!!BK_EDIT && ROLE === 2 ? '运营专员不能调整生效范围' : ((o && o.why) || '')));
+    alert('当前身份不可选择该生效范围\n' + (!!BK_EDIT && ROLE === 2 ? '行业小二不能调整生效范围' : ((o && o.why) || '')));
   }
   function bkPickScope(k){
     BK_FORM.sc = k;
@@ -1247,7 +1247,7 @@
     var S = SEC[CUR];
     BK_EDIT = null;
     renderBkFields({});
-    BK_FORM = {sc:(ROLE === 2 ? 'SELF' : ''), inds:{}};   // 专员只有一个可选范围，默认选中
+    BK_FORM = {sc:(ROLE === 2 ? 'SELF' : ''), inds:{}};   // 小二只有一个可选范围，默认选中
     bkSetView('form');
     document.getElementById('bkTtlTx').textContent = '＋ 新增' + S.unit;
     renderBkScopes();
@@ -1359,7 +1359,7 @@
   }
   function rcShift(n){ return new Date(new Date().getTime() - n * 86400000); }
 
-  // 下发商家池：一个商家只归属一个专员、只绑定一个活动 —— 保证漏斗/汇总/记录三处口径可加总
+  // 下发商家池：一个商家只归属一个小二、只绑定一个活动 —— 保证漏斗/汇总/记录三处口径可加总
   var RC_MER = (function(){
     var byInd = {}, byStaff = {}, i, b, f, n;
     for(i = 0; i < STAFF.length; i++){
@@ -1371,7 +1371,7 @@
       for(b = 0; b < pool.length; b++){
         for(f = 0; f < RC_SUF.length; f++) combos.push(pool[b] + RC_SUF[f]);
       }
-      // 确定性洗牌：避免「品牌×后缀」的排列规律让某位专员拿到清一色同类型店铺
+      // 确定性洗牌：避免「品牌×后缀」的排列规律让某位小二拿到清一色同类型店铺
       for(i = combos.length - 1; i > 0; i--){
         var jj = Math.floor(rcRnd(i * 13 + ind.length * 29 + 7) * (i + 1)) % (i + 1);
         var sw = combos[i]; combos[i] = combos[jj]; combos[jj] = sw;
@@ -1405,14 +1405,14 @@
     return n;
   }
   function rcAssigned(){ return rcAssignedBy('全部', '全部', '全部'); }
-  // 单个分组（活动 × 行业 × 专员）的下发商家数
+  // 单个分组（活动 × 行业 × 小二）的下发商家数
   function rcPoolCnt(act, ind, nick){
     var n = 0;
     rcPool(ind, nick).forEach(function(it){ if(it.act === act) n++; });
     return n;
   }
 
-  // 近 30 天触达流水：每位专员每天 2~7 条
+  // 近 30 天触达流水：每位小二每天 2~7 条
   var RC_LOG = (function(){
     var out = [], seed = 0, back, si, j;
     for(back = 29; back >= 0; back--){
@@ -1420,7 +1420,7 @@
       for(si = 0; si < STAFF.length; si++){
         var s = STAFF[si], pool = rcPool(s.ind, s.nick);
         if(!pool.length) continue;
-        // 每位专员只会触达自己商家池中的一部分，其余为「尚未触达」的商家
+        // 每位小二只会触达自己商家池中的一部分，其余为「尚未触达」的商家
         var lim = Math.max(1, Math.round(pool.length * (0.55 + 0.30 * rcRnd(si * 91 + 7))));
         var k = 6 + Math.floor(rcRnd(++seed) * 9);
         for(j = 0; j < k; j++){
@@ -1471,8 +1471,8 @@
   }
   function rcScopeTxt(){
     var trk = (ROLE === 1 && LEADER_TRACK !== 'all') ? ' · ' + LEADER_TRACK + ' 赛道' : '';
-    return ROLE === 0 ? '数据范围：服饰全行业 · 全体专员'
-         : (ROLE === 1 ? '数据范围：' + LEADER_IND + trk + ' · ' + (LEADER_TRACK === 'all' ? '全部' : LEADER_TRACK + ' 赛道') + '专员' : '数据范围：仅我自己（' + ME.ind + ' ' + ME.nick + '）');
+    return ROLE === 0 ? '数据范围：服饰全行业 · 全体小二'
+         : (ROLE === 1 ? '数据范围：' + LEADER_IND + trk + ' · ' + (LEADER_TRACK === 'all' ? '全部' : LEADER_TRACK + ' 赛道') + '小二' : '数据范围：仅我自己（' + ME.ind + ' ' + ME.nick + '）');
   }
   function rcInds(){
     if(ROLE === 0) return IND.map(function(d){ return d.n; });
@@ -1518,7 +1518,7 @@
     rcRender();
   }
   function rcIndChg(which){
-    // 行业变了，运营专员的候选项跟着变
+    // 行业变了，行业小二的候选项跟着变
     var ind = rcVal(which === 1 ? 'rcF1ind' : 'rcF2ind');
     var id = which === 1 ? 'rcF1nick' : 'rcF2nick';
     var sel = document.getElementById(id);
@@ -1581,7 +1581,7 @@
     }else{
       em.innerHTML = '';
       var tr = 0, tp = 0, td = 0, ts = rcAssignedBy(f.act, f.ind, f.nick);
-      tb.innerHTML = '<thead><tr><th class="lead">关联活动</th><th class="lead">行业</th><th class="lead">运营专员</th>' +
+      tb.innerHTML = '<thead><tr><th class="lead">关联活动</th><th class="lead">行业</th><th class="lead">行业小二</th>' +
         '<th>下发商家数</th>' +
         '<th>触达商家数</th><th>触达覆盖率' + rcQm('触达商家数/下发商家数') + '</th>' +
         '<th>回应商家数</th><th>回应商家率' + rcQm('回应商家数/触达商家数') + '</th>' +
@@ -1634,7 +1634,7 @@
     }else{
       em.innerHTML = '';
       RC_PAGE = page;   // 当前页记录，供「触达H5预览」弹窗按下标取用
-      tb.innerHTML = '<thead><tr><th class="lead">关联活动</th><th class="lead">行业</th><th class="lead">运营专员</th>' +
+      tb.innerHTML = '<thead><tr><th class="lead">关联活动</th><th class="lead">行业</th><th class="lead">行业小二</th>' +
         '<th class="lead">商家名称</th><th class="lead">触达时间</th><th class="lead">触达渠道</th><th class="lead">触达话术</th>' +
         '<th class="lead">触达H5预览</th>' +
         '<th class="lead">发送状态</th><th class="lead">商家回应</th><th class="lead">商家行动</th></tr></thead><tbody>' +
@@ -1668,17 +1668,17 @@
     if(e) e.scrollIntoView({block:'nearest'});
   }
 
-  // 身份切换后重建筛选项（行业 / 运营专员的候选范围随身份收窄）
+  // 身份切换后重建筛选项（行业 / 行业小二的候选范围随身份收窄）
   function rcFilters(){
     var inds = rcInds(), lock = ROLE !== 0;
     document.getElementById('rcSumFil').innerHTML =
       rcSel('rcF1act', '关联活动', RC_ACTS, '全部', 'rcSumRender()') +
       rcSel('rcF1ind', '行业', inds, '全部', 'rcIndChg(1)', lock) +
-      rcSel('rcF1nick', '运营专员', rcNicks(lock ? inds[0] : '全部'), '全部', 'rcSumRender()', ROLE === 2);
+      rcSel('rcF1nick', '行业小二', rcNicks(lock ? inds[0] : '全部'), '全部', 'rcSumRender()', ROLE === 2);
     document.getElementById('rcLogFil').innerHTML =
       rcSel('rcF2act', '关联活动', RC_ACTS, '全部', 'rcLogGo()') +
       rcSel('rcF2ind', '行业', inds, '全部', 'rcIndChg(2)', lock) +
-      rcSel('rcF2nick', '运营专员', rcNicks(lock ? inds[0] : '全部'), '全部', 'rcLogGo()', ROLE === 2) +
+      rcSel('rcF2nick', '行业小二', rcNicks(lock ? inds[0] : '全部'), '全部', 'rcLogGo()', ROLE === 2) +
       '<span class="fw"><input id="rcF2mer" placeholder="搜索商家名称" oninput="rcLogGo()"></span>' +
       rcSel('rcF2chn', '触达渠道', RC_CHNS, '全部', 'rcLogGo()') +
       rcSel('rcF2st', '发送状态', RC_STS, '全部', 'rcLogGo()') +
@@ -1723,7 +1723,7 @@
     h.classList.toggle('on', !!r.hint);
     renderKpiPicker();
     renderKpis();
-    // 表单一仅超管可见；表单二超管看全行业、负责人 看本行业、专员不可见；默认收起
+    // 表单一仅超管可见；表单二超管看全行业、负责人 看本行业、小二不可见；默认收起
     var ti = document.getElementById('tblInd'), ts = document.getElementById('tblStaff');
     ti.classList.toggle('on', n === 0);
     ts.classList.toggle('on', n === 0 || n === 1);
@@ -1895,7 +1895,7 @@
   var BT_OPEN={};      // metricId -> 是否展开
   var BT_TPL=[         // 话术模板库（可保存追加）
     {name:'大促催办·标准',text:'您好 {商家名}～大促临近，检测到贵店{缺口项}，建议尽快在 {入口} 于 {截止日} 前完成设置，承接大促流量～'},
-    {name:'温和提醒·亲切',text:'亲爱的 {商家名}，专员发现贵店{缺口项}啦～在 {入口} 花两分钟补齐就能承接更多流量哦，记得 {截止日} 前完成 '}
+    {name:'温和提醒·亲切',text:'亲爱的 {商家名}，小二发现贵店{缺口项}啦～在 {入口} 花两分钟补齐就能承接更多流量哦，记得 {截止日} 前完成 '}
   ];
   function btMetric(id){ for(var i=0;i<BT_METRICS.length;i++) if(BT_METRICS[i].id===id) return BT_METRICS[i]; return null; }
   function btMerchant(id){ for(var i=0;i<BT_MERCHANTS.length;i++) if(BT_MERCHANTS[i].id===id) return BT_MERCHANTS[i]; return null; }
@@ -3256,7 +3256,7 @@
   }
   mfInit();     // 商家明细：打标 商家ID/规模分层/T层级/待办类型，并渲染待办类型多选项
   mPage(1);
-  setRole(2);   // 默认进入运营专员视角
+  setRole(2);   // 默认进入行业小二视角
   mtInit();     // 指标统计周期：默认近 30 天（截至底表更新日 8.10）
   rcInit();     // 触达回执日报：默认统计周期 今日 — 今日
   xlRenderGuess();  // 小策窄栏：猜你想问
